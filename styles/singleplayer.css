@@ -1,0 +1,30 @@
+.selection-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+}
+
+.selection-image {
+  justify-content: left;
+}
+
+.selection-title {
+  margin-top: 5vh;
+  font-family: "Chakra Petch";
+  font-style: italic;
+  font-weight: bold;
+  font-size: 4vw;
+  text-align: left;
+  text-transform: capitalize;
+}
+
+.selection-list li {
+  margin-left: 4vw;
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-size: 1.3vw;
+  /* identical to box height */
+
+  text-decoration-line: underline;
+  text-transform: capitalize;
+}

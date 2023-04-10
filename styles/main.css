@@ -1,0 +1,108 @@
+/* 
+    This is a Global file for general styling, such as fonts, colors, etc.
+    This file is loaded on every page. 
+    Do not put page-specific styles in this file. 
+*/
+
+/* Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap");
+
+/* Main Page Styling */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #000000;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #86e9fd #000000;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #86e9fd;
+  border-radius: 10px;
+  border: 3px solid #000000;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav-button {
+  color: white;
+  width: 8vh;
+}
+
+.nav-button:hover svg path {
+  fill: #81e8ff;
+  transform-origin: bottom;
+  animation-name: fill-blue;
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fill-blue {
+  0% {
+    transform: scaleX(0.9);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+.topbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 10vh;
+  width: 100%;
+  background: #000000;
+}
+
+.page-title {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: bold;
+  font-size: 2vw;
+  text-align: center;
+  text-transform: capitalize;
+
+  color: #81e8ff;
+  flex: 1;
+}
+
+.topleft-name {
+  font-family: "Chakra Petch";
+  font-style: italic;
+  font-weight: bold;
+  font-size: 2vw;
+  text-align: left;
+  text-transform: capitalize;
+
+  color: #7b66ff;
+  margin: 10px;
+}

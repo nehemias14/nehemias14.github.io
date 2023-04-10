@@ -1,0 +1,140 @@
+/* This sheet is for styling the homepage only. */
+
+.ready-txt {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 5vw;
+
+  color: #ffffff;
+
+  margin: 10px;
+}
+
+.ready-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30vw;
+  flex-direction: column;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.singleplayer-button {
+  background: linear-gradient(
+    to right,
+    #f55959 0%,
+    #f78995 20.83%,
+    #f18eec 48.96%,
+    #cd9bf9 75%,
+    #9d95ff 100%
+  );
+  border-radius: 1vw;
+  height: 8vh;
+  font-family: "Space Grotesk";
+  border: none;
+  font-weight: bold;
+  font-size: 2vw;
+  width: 14vw;
+  margin: 1vw;
+  box-shadow: 0 0 2vw #9d95ff;
+  filter: blur(0.026vw);
+}
+
+.multiplayer-button {
+  background: linear-gradient(
+    0deg,
+    rgba(245, 89, 89, 0.3) 0%,
+    rgba(247, 137, 149, 0.3) 20.83%,
+    rgba(241, 142, 236, 0.3) 48.96%,
+    rgba(205, 155, 249, 0.3) 75%,
+    rgba(157, 149, 255, 0.3) 100%
+  );
+  border-radius: 13px;
+  border-radius: 1vw;
+  height: 8vh;
+  font-family: "Space Grotesk";
+  border: none;
+  font-weight: bold;
+  font-size: 2vw;
+  width: 14vw;
+  color: white;
+  margin: 1vw;
+  box-shadow: 0 0 2vw #423e6d;
+  filter: blur(0.026vw);
+}
+
+.singleplayer-button:hover {
+  background: linear-gradient(
+    to right,
+    rgba(245, 89, 89, 0.3) 0%,
+    rgba(247, 137, 149, 0.3) 20.83%,
+    rgba(241, 142, 236, 0.3) 48.96%,
+    rgba(205, 155, 249, 0.3) 75%,
+    rgba(157, 149, 255, 0.3) 100%
+  );
+  color: white;
+  background-size: 200% 100%;
+  background-position: right;
+  transition: background-position 2s ease;
+  transition: 1s ease;
+  box-shadow: 0 0 2vw #8f3333;
+  filter: blur(0vw);
+}
+
+.multiplayer-button:hover {
+  background: linear-gradient(
+    to right,
+    #f55959 0%,
+    #f78995 20.83%,
+    #f18eec 48.96%,
+    #cd9bf9 75%,
+    #9d95ff 100%
+  );
+  color: black;
+  background-size: 200% 100%;
+  background-position: right;
+  transition: background-position 2s ease;
+  transition: 1s ease;
+  box-shadow: 0 0 2vw #f18eec;
+  filter: blur(0vw);
+}
+
+.glow-1 {
+  height: 30vh;
+  width: 30vw;
+  background: #499CAE;
+filter: blur(12vw);
+position: absolute;
+top: 50vh;
+left: 45vw;
+z-index: -1;
+}
+
+.glow-2 {
+  height: 30vh;
+  width: 30vw;
+  background: #ad3535;
+filter: blur(12vw);
+position: absolute;
+top: 50vh;
+left: 25vw;
+z-index: -1;
+}
+
+.glow-3 {
+  height: 30vh;
+  width: 30vw;
+  background: #894592;
+filter: blur(12vw);
+position: absolute;
+top: 25vh;
+left: 35vw;
+z-index: -1;
+}
