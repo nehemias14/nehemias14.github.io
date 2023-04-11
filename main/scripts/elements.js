@@ -10,7 +10,7 @@ class RomList extends HTMLElement {
 
     const linkElem = document.createElement("link");
     linkElem.setAttribute("rel", "stylesheet");
-    linkElem.setAttribute("href", "../../styles/consoles.css");
+    linkElem.setAttribute("href", "../../../styles/consoles.css");
 
     this.shadowRoot.appendChild(linkElem);
 

@@ -1,26 +1,24 @@
-const params = new Proxy(new URLSearchParams(window.location.search), {
-    get: (searchParams, prop) => searchParams.get(prop),
-  });
+var fileName = location.href.split("/").slice(-1).toString().replace(".html", "").split("?")[0];
 
 function handler() {
-    let console = params.console;
+    let name = fileName;
+    console.log(name);
     let title = document.getElementById('pageTitle');
-
-    if (console == "gba") {
+    if (name == "gba") {
         title.innerHTML += ' - GBA';
-    } else if (console == "gb") {
+    } else if (name == "gb") {
         title.innerHTML += ' - GB';
-    } else if (console == "nds") {
+    } else if (name == "nds") {
         title.innerHTML += ' - NDS';
-    } else if (console == "nes") {
+    } else if (name == "nes") {
         title.innerHTML += ' - NES';
-    } else if (console == "snes") {
+    } else if (name == "snes") {
         title.innerHTML += ' - SNES';
-    } else if (console == "n64") {
+    } else if (name == "n64") {
         title.innerHTML += ' - N64';
-    } else if (console == "gbc") {
+    } else if (name == "gbc") {
         title.innerHTML += ' - GBC';
-    } else if (console == "segamd") {
+    } else if (name == "segamd") {
         title.innerHTML += ' - Sega MD';
     } else {
         title.innerHTML += ' - Other';

@@ -1,2 +1,2 @@
-let romLocation = '../../../gba-host/';
+let romLocation = '../../../../gba-host/';
 localStorage.setItem('romLocation', romLocation);
