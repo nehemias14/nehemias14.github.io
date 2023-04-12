@@ -1,3 +1,11 @@
+/*
+    This file creates a custom HTMLElement that can be used wherever this script is referenced.
+    This element is accessed via <rom-add></rom-add> and can be used to add a game to the list.
+    Attributes:
+        console: The console the game is for. This is used to determine the console to display, as well as other information sent to Play page.
+        game: The name of the game. This is used to determine the name of the game to display, as well as other information sent to Play page.
+*/
+
 class RomList extends HTMLElement {
   constructor() {
     super();
