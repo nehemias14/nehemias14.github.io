@@ -14,7 +14,8 @@ while myline:
     myline1 = myline.replace("\n", "")
     mylist = myline1.partition(".")
     with open("results.txt", "a") as f:
-        f.write(f"""<rom-add console="{console}" game="{mylist[0]}" ext="{mylist[2]}"></rom-add>\n""")
+        # Use the following if you want an ext attribute
+        # f.write(f"""<rom-add console="{console}" game="{mylist[0]}" ext="{mylist[2]}"></rom-add>\n""")
 
         # Use the following if you do not want an ext attribute
-        # f.write(f"""<rom-add console="{console}" game="{mylist[0]}"></rom-add>\n""")
+         f.write(f"""<rom-add console="{console}" game="{mylist[0]}"></rom-add>\n""")
