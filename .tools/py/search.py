@@ -5,7 +5,7 @@ myfile = open("filenames.txt", "r")
 # This is the console type. The acceptable parameters are the following:
 # TODO Figure out acceptable core params
 ## Default is gba 
-console = "gba"
+console = "gb"
 
 
 myline = myfile.readline()
@@ -15,5 +15,5 @@ while myline:
     mylist = myline1.partition(".")
     with open("results.txt", "a") as f:
         # Use the following if you want to add to the array for searching
-        f.write(f"""{{ name: "{mylist[0]}", console: "{console}" }}\n"""),
+        f.write(f"""{{ name: "{mylist[0]}", console: "{console}" }},\n"""),
 
