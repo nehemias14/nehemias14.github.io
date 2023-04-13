@@ -14,3 +14,21 @@
   text-decoration-color: rgb(251, 29, 29);
   transition: 0.3s;
 }
+
+.search {
+  text-align: center;
+  background-color: transparent;
+  border: 3px solid #FFFFFF;
+  border-radius: 2vh;
+  height: 5vh;
+  width: 30vw;
+  color: white;
+}
+
+.search-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+}
