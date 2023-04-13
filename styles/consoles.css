@@ -32,3 +32,17 @@
   margin-top: 2vh;
   margin-bottom: 2vh;
 }
+
+.bubble-next {
+  background-color: #81e8ff;
+  border: none;
+  border-radius: 2vh;
+  margin-left: 1vw;
+}
+
+.bubble-next:hover {
+  background-color: #98ff72;
+  fill: #000000;
+  transition: 0.3s;
+  transform: scale(1.1);
+}

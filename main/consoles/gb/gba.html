@@ -41,6 +41,14 @@
     <rom-add console="consoleName" game="<filename_no_ext>" ext="<ext_of_filename>"></rom-add>
     Where the `ext` attribute is not needed if it follows our normal conventions
     -->
+    <div class="search-div">
+      <input class="search" type="text" id="console-search" placeholder="Search for games...">
+      <button class="bubble-next" id="goSearch">
+        <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="52">
+          <path d="m375 816-43-43 198-198-198-198 43-43 241 241-241 241" fill="#00000"/>
+        </svg>
+      </button>
+    </div>
     <rom-add console="gba" game="007"></rom-add>
     <rom-add console="gba" game="0994"></rom-add>
     <rom-add console="gba" game="advancewars"></rom-add>
@@ -423,4 +431,5 @@
     <script src="../../scripts/title.js"></script>
     <script src="../../scripts/config.js"></script>
     <script src="../../scripts/nav.js"></script>
+    <script src="../../scripts/console-search.js"></script>
 </html>

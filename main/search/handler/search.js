@@ -3,6 +3,7 @@
 // Parse console query parameter from URL
 var urlParams = new URLSearchParams(window.location.search);
 var consoleFilter = urlParams.get("console");
+let searchParam = urlParams.get("s");
 
 if (consoleFilter) {
 let filterQuery = document.getElementById(consoleFilter);
@@ -53,6 +54,12 @@ filters.forEach(function (filter) {
 var searchInput = document.querySelector("#search-input");
 searchInput.addEventListener("input", handleSearchInput);
 
+
+if (searchParam) {
+    document.getElementById("search-input").value = searchParam;
+    handleSearchInput();
+}
+
 function handleSearchInput() {
     var query = searchInput.value.toLowerCase() + "*"; // Convert query to lowercase and add wildcard
     var searchResults = document.querySelector("#search-results");
@@ -97,7 +104,7 @@ function handleSearchInput() {
   
     // Loop through search results and show
     if (results.length > 0) {
-      var numResults = Math.min(results.length, 50); // Limit to 50 results
+      var numResults = Math.min(results.length, 1000); // Limit to 50 results
       for (var i = 0; i < numResults; i++) {
         var result = results[i];
         var game = filteredGamesByConsole.find(function (g) {
