@@ -19,7 +19,7 @@ function findHome() {
 }
 
 var homeLink = findHome();
-var optionsLink = "/options";
+var optionsLink = "/main/options";
 
 home.addEventListener("click", function () {
   window.location = homeLink;
