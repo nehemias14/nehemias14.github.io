@@ -5,7 +5,7 @@ myfile = open("filenames.txt", "r")
 # This is the console type. The acceptable parameters are the following:
 # TODO Figure out acceptable core params
 ## Default is gba 
-console = "gba"
+console = "n64"
 
 
 myline = myfile.readline()
@@ -13,7 +13,7 @@ while myline:
     myline = myfile.readline()
     myline1 = myline.replace("\n", "")
     mylist = myline1.partition(".")
-    with open("results.txt", "a") as f:
+    with open("resultsMain.txt", "a") as f:
         # Use the following if you want an ext attribute
         # f.write(f"""<rom-add console="{console}" game="{mylist[0]}" ext="{mylist[2]}"></rom-add>\n""")
 
