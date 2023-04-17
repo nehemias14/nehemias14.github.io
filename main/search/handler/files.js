@@ -3,7 +3,7 @@
 */
 
 var games = [
-    { name: "007", console: "gba" },
+{ name: "007", console: "gba" },
 { name: "0994", console: "gba" },
 { name: "advancewars", console: "gba" },
 { name: "advancewars2", console: "gba" },

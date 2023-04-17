@@ -46,19 +46,36 @@
     </rom-add> 
     -->
     <div class="search-div">
-      <input class="search" type="text" id="console-search" placeholder="Search for games...">
+      <input class="search" type="text" id="console-search" placeholder="Search Console-Wide">
       <button class="bubble-next" id="goSearch">
         <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="52">
           <path d="m375 816-43-43 198-198-198-198 43-43 241 241-241 241" fill="#00000"/>
         </svg>
       </button>
     </div>
-    <rom-add console="gba" game="pokemonsapphire"></rom-add>
-    <rom-add console="gba" game="pokemonsapphire"></rom-add>
-    <rom-add console="gba" game="pokemonsapphire"></rom-add>
-    <rom-add console="gba" game="pokemonsapphire"></rom-add>
-    <rom-add console="gba" game="pokemonsapphire"></rom-add>
-    <rom-add console="gba" game="pokemonsapphire"></rom-add>
+    <div class="search-div">
+      <div class="bubble-next" id="backMultiple">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" style="color:black;" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="52" height="48" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
+        </svg>             
+      </div>
+      <div class="bubble-next" id="backPage">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" style="color:black;" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6" width="48">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>                  
+      </div>
+      <h1 class="page-text"> Page: 1 </h1>
+      <div class="bubble-next" id="backPage">
+        <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="52">
+          <path d="m375 816-43-43 198-198-198-198 43-43 241 241-241 241" fill="#00000"/>
+        </svg>
+      </div>
+      <div class="bubble-next" id="forwardPage">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6" width="52" height="48" style="color: black;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" />
+        </svg>        
+      </div>
+    </div>
 
 
 
@@ -66,9 +83,10 @@
 
 
     </body>
-    <script src="../../scripts/elements.js"></script>
+        <script src="../../scripts/elements.js"></script>
     <script src="../../scripts/title.js"></script>
     <script src="../../scripts/config.js"></script>
     <script src="../../scripts/nav.js"></script>
     <script src="../../scripts/console-search.js"></script>
+    <script src="../js/pagehandler.js"></script>
 </html>

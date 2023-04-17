@@ -12,57 +12,59 @@ class RomList extends HTMLElement {
 
     this.attachShadow({ mode: "open" });
 
-    // Template/Code
-    let console = this.getAttribute("console");
-    let textToFilter = this.getAttribute("game");
-
-    const linkElem = document.createElement("link");
-    linkElem.setAttribute("rel", "stylesheet");
-    linkElem.setAttribute("href", "../../../styles/consoles.css");
-
-    this.shadowRoot.appendChild(linkElem);
-
-    const gameTitle = document.createElement("h1");
-    gameTitle.classList.add("rom-title");
-
-    gameTitle.onclick = function() {
-        window.location.href = sendGameInfo();
-    }
-
-    let filteredText = textToFilter.replace(/(\([^\)]*\)|\.[^.]+|_)+$/g, '').replace(/_/g, ' ');
-    gameTitle.innerHTML = filteredText;
-
-    this.shadowRoot.appendChild(gameTitle);
-
-    function sendConsoleInfo() {
-        let providedConsole = console;
-        if (providedConsole == "gba") {
-            return "gba";
-        } else if (providedConsole == "gb") {
-            return "gb";
-        } else if (providedConsole == "nds") {
-            return "nds";
-        } else if (providedConsole == "nes") {
-            return "nes";
-        } else if (providedConsole == "snes") {
-            return "snes";
-        } else if (providedConsole == "n64") {
-            return "n64";
-        } else if (providedConsole == "gbc") {
-            return "gbc";
-        } else if (providedConsole == "segamd") {
-            return "segamd";
-        } else {
-            return "other";
+  }
+  connectedCallback(){
+        // Template/Code
+        let console = this.getAttribute("console");
+        let textToFilter = this.getAttribute("game");
+    
+        const linkElem = document.createElement("link");
+        linkElem.setAttribute("rel", "stylesheet");
+        linkElem.setAttribute("href", "../../../styles/consoles.css");
+    
+        this.shadowRoot.appendChild(linkElem);
+    
+        const gameTitle = document.createElement("h1");
+        gameTitle.classList.add("rom-title");
+    
+        gameTitle.onclick = function() {
+            window.location.href = sendGameInfo();
         }
-    }
-
-    function sendGameInfo() {
-        let providedGame = textToFilter;
-        let consoleType = sendConsoleInfo();
-        let newLink = '../../play/index.html?console=' + consoleType + '&game=' + providedGame;
-        return newLink;
-    }
+    
+        let filteredText = textToFilter.replace(/(\([^\)]*\)|\.[^.]+|_)+$/g, '').replace(/_/g, ' ');
+        gameTitle.innerHTML = filteredText;
+    
+        this.shadowRoot.appendChild(gameTitle);
+    
+        function sendConsoleInfo() {
+            let providedConsole = console;
+            if (providedConsole == "gba") {
+                return "gba";
+            } else if (providedConsole == "gb") {
+                return "gb";
+            } else if (providedConsole == "nds") {
+                return "nds";
+            } else if (providedConsole == "nes") {
+                return "nes";
+            } else if (providedConsole == "snes") {
+                return "snes";
+            } else if (providedConsole == "n64") {
+                return "n64";
+            } else if (providedConsole == "gbc") {
+                return "gbc";
+            } else if (providedConsole == "segamd") {
+                return "segamd";
+            } else {
+                return "other";
+            }
+        }
+    
+        function sendGameInfo() {
+            let providedGame = textToFilter;
+            let consoleType = sendConsoleInfo();
+            let newLink = '../../play/index.html?console=' + consoleType + '&game=' + providedGame;
+            return newLink;
+        }
   }
 }
 

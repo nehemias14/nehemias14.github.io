@@ -37,7 +37,7 @@
   background-color: #81e8ff;
   border: none;
   border-radius: 2vh;
-  margin-left: 1vw;
+  margin: 0.6vw;
 }
 
 .bubble-next:hover {
@@ -45,4 +45,12 @@
   fill: #000000;
   transition: 0.3s;
   transform: scale(1.1);
+}
+
+.page-text {
+  font-family: 'Inter';
+  font-size: 1.5vw;
+  font-weight: lighter;
+  text-align: center;
+  color: #ffffff;
 }
