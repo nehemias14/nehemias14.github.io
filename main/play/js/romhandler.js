@@ -19,7 +19,7 @@ function assembleRomLink() {
     ext = ".7z";
   } else if (console == "nds") {
     ext = ".zip";
-    let newLink = romLocation + console + "-alt/" + providedGame + ext; // Assemble the link
+    let newLink = ndsLocation + console + "-alt/" + providedGame + ext; // Assemble the link
     return newLink;
   } else if (console == "nes") {
     ext = ".nes.zip";
