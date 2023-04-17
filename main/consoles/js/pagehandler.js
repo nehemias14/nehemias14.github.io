@@ -10,7 +10,6 @@ pageNum.innerHTML = 'Page: ' + page;
 
 function loadGames() {
   // Load the JSON data from the file
-  console.log("json/" + consoleType + ".json");
   fetch("json/" + consoleType + ".json")
     .then(response => response.json())
     .then(data => {
@@ -22,7 +21,6 @@ function loadGames() {
 
       // Create a new rom-add element for each game
       games.forEach(game => {
-        console.log(game);
         const romAdd = document.createElement("rom-add");
         romAdd.setAttribute("console", game.console);
         romAdd.setAttribute("game", game.game);
@@ -35,3 +33,37 @@ function loadGames() {
 }
 
 loadGames();
+
+const backMultiple = document.getElementById("backMultiple");
+const backPage = document.getElementById("backPage");
+const forwardPage = document.getElementById("forwardPage");
+const forwardMultiple = document.getElementById("forwardMultiple");
+
+var url = window.location.href.split('?')[0];
+let interval = 5;
+
+backMultiple.addEventListener("click", function() {
+    let backAmount = parseInt(page) - interval;
+    if (backAmount < 1) {
+        backAmount = 1;
+    }
+    window.location.href = url + "?page=" + backAmount;
+});
+
+backPage.addEventListener("click", function() {
+    let backAmount = parseInt(page) - 1;
+    if (backAmount < 1) {
+        backAmount = 1;
+    }
+    window.location.href = url + "?page=" + backAmount;
+});
+
+forwardPage.addEventListener("click", function() {
+    let forwardAmount = parseInt(page) + 1;
+    window.location.href = url + "?page=" + forwardAmount;
+});
+
+forwardMultiple.addEventListener("click", function() {
+    let forwardAmount = parseInt(page) + interval;
+    window.location.href = url + "?page=" + forwardAmount;
+});
