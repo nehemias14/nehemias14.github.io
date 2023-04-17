@@ -10,6 +10,8 @@ function assembleRomLink() {
   let providedGame = params.game;
   let console = params.console;
   let romLocation = localStorage.getItem("romLocation");
+  let ndsLocation = localStorage.getItem("ndsLocation");
+  let n64Location = localStorage.getItem("n64Location");
   let ext; // Determine the extension of the ROM based on the console
   if (console == "gba") { 
     ext = ".gba";
@@ -17,12 +19,16 @@ function assembleRomLink() {
     ext = ".7z";
   } else if (console == "nds") {
     ext = ".zip";
+    let newLink = romLocation + console + "-alt/" + providedGame + ext; // Assemble the link
+    return newLink;
   } else if (console == "nes") {
     ext = ".nes.zip";
   } else if (console == "snes") {
     ext = ".zip";
   } else if (console == "n64") {
     ext = ".7z";
+    let newLink = n64Location + providedGame + ext; // Assemble the link
+    return newLink;
   } else if (console == "gbc") {
     ext = ".7z";
   } else if (console == "segamd") {
