@@ -84,7 +84,7 @@
   background-position: right;
   transition: background-position 2s ease;
   transition: 1s ease;
-  box-shadow: 0 0 2vw #8f3333;
+  box-shadow: 0 0 2vw #61e7ff;
   filter: blur(0vw);
 }
 
@@ -92,8 +92,8 @@
   background: linear-gradient(
     to right,
     #f55959 0%,
-    #f78995 20.83%,
-    #f18eec 48.96%,
+    #ff0422 20.83%,
+    #ff5050 48.96%,
     #cd9bf9 75%,
     #9d95ff 100%
   );
@@ -102,7 +102,7 @@
   background-position: right;
   transition: background-position 2s ease;
   transition: 1s ease;
-  box-shadow: 0 0 2vw #f18eec;
+  box-shadow: 0 0 2vw #fc2424;
   filter: blur(0vw);
 }
 
