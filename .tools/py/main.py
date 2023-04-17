@@ -14,11 +14,11 @@ console = "segamd"
 rom_add_list = []
 
 for filename in game_filenames:
-    game_name, _ = filename.partition(".")
+    game_name = filename.partition(".")[0]
     rom_add_dict = {"console": console, "game": game_name}
     rom_add_list.append(rom_add_dict)
 
-json_string = json.dumps(rom_add_list, indent=2)
+json_string = json.dumps(rom_add_list, indent=1)
 
 with open("resultsMain.json", "w") as f:
     f.write(json_string)
