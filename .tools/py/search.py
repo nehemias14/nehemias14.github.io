@@ -5,7 +5,7 @@ myfile = open("filenames.txt", "r")
 # This is the console type. The acceptable parameters are the following:
 # TODO Figure out acceptable core params
 ## Default is gba 
-console = "n64"
+console = "nds"
 
 
 myline = myfile.readline()
