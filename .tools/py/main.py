@@ -9,7 +9,7 @@ import json
 with open("filenames.txt", "r") as myfile:
     game_filenames = myfile.read().splitlines()
 
-console = "n64"
+console = "nds"
 
 rom_add_list = []
 
