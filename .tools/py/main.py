@@ -9,7 +9,7 @@ import json
 with open("filenames.txt", "r") as myfile:
     game_filenames = myfile.read().splitlines()
 
-console = "segamd"
+console = "n64"
 
 rom_add_list = []
 
