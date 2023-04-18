@@ -27,7 +27,7 @@ function assembleRomLink() {
     ext = ".zip";
   } else if (console == "n64") {
     ext = ".7z";
-    let newLink = n64Location + providedGame + ext; // Assemble the link
+    let newLink = n64Location + console + "-alt/" + providedGame + ext; // Assemble the link
     return newLink;
   } else if (console == "gbc") {
     ext = ".7z";
