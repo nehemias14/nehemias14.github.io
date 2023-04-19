@@ -12,7 +12,7 @@ filterQuery.classList.add(consoleFilter);
 }
 // Filter games by console
 var filteredGames = games.filter(function (game) {
-  game.name = game.name
+  gameName = game.name
     .replace(/(\([^\)]*\)|\.[^.]+|_=)+$/g, "")
   return games;
 });
