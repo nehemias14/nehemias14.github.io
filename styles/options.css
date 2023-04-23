@@ -17,13 +17,13 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    width: 95%;
     background: var(--bg-color);
-    margin: 10px;
 }
 
 .theme-ss {
     border: 1px solid var(--primary-accent);
+    margin: 1vh;
 }
 
 .theme-img {
