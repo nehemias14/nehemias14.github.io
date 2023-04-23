@@ -20,6 +20,21 @@
   --link-color: #7b66ff;
 }
 
+[data-theme="dark"] {
+  --bg-color: #000000;
+  --primary-accent: #81e8ff;
+  --secondary-accent: rgb(251, 29, 29);
+  --text-color: #ffffff;
+  --link-color: #7b66ff;
+}
+
+[data-theme="sunset"] {
+  --bg-color: #000000;
+  --primary-accent: #ff7f00;
+  --secondary-accent: #7a000a;
+  --text-color: #ffffff;
+  --link-color: #fff566;
+}
 
 
 

@@ -1,7 +1,9 @@
+*{
+    transition-duration: 0.1s;
+}
+
 .title-text {
-    font-family: "Chakra Petch";
-    font-style: italic;
-    font-weight: bold;
+    font-family: "Space Grotesk";
     font-size: 4vw;
     text-align: center;
     text-transform: capitalize;
@@ -29,11 +31,11 @@
 .theme-img {
     width: 30vw;
     margin: 2vh;
+    border-bottom: 3px solid var(--link-color);
 }
 
 .theme-title {
-    font-family: "Chakra Petch";
-    font-style: italic;
+    font-family: "Space Grotesk";
     font-weight: bold;
     font-size: 1.5vw;
     text-align: center;
@@ -44,8 +46,7 @@
 }
 
 .theme-text {
-    font-family: "Chakra Petch";
-    font-style: italic;
+    font-family: "Inter";
     font-weight: bold;
     font-size: 1vw;
     text-align: center;
