@@ -6,7 +6,7 @@
   font-weight: 600;
   font-size: 5vw;
 
-  color: #ffffff;
+  color: var(--text-color);
 
   margin: 10px;
 }

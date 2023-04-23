@@ -1,0 +1,61 @@
+.title-text {
+    font-family: "Chakra Petch";
+    font-style: italic;
+    font-weight: bold;
+    font-size: 4vw;
+    text-align: center;
+    text-transform: capitalize;
+    
+    color: var(--primary-accent);
+    margin: 10px;
+}
+
+/* Theme Container + Styles */
+
+.theme-ss-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background: var(--bg-color);
+    margin: 10px;
+}
+
+.theme-ss {
+    border: 1px solid var(--primary-accent);
+}
+
+.theme-img {
+    width: 30vw;
+    margin: 2vh;
+}
+
+.theme-title {
+    font-family: "Chakra Petch";
+    font-style: italic;
+    font-weight: bold;
+    font-size: 1.5vw;
+    text-align: center;
+    text-transform: capitalize;
+    
+    color: var(--primary-accent);
+    margin: 10px;
+}
+
+.theme-text {
+    font-family: "Chakra Petch";
+    font-style: italic;
+    font-weight: bold;
+    font-size: 1vw;
+    text-align: center;
+    text-transform: capitalize;
+    
+    color: var(--secondary-accent);
+    margin: 10px;
+}
+
+.theme-ss:hover {
+    transform: scale(1.02);
+    border: 1px solid var(--secondary-accent);
+}
