@@ -5,9 +5,13 @@ This is the successor to our GBA site.
 ## What new features will it have?
 Enhanced console-wide search, Global Search, Multiplayer Support (Made by us, doesn't use Netplay), faster in general, less cluttered, cleaner UI + More!
 
-
+## Multiplayer:
+Multiplayer is a WIP, expected by 2.0 update. It's still in development by our team. Please be patient. We'll let you know any and all updates!
 
 # Contributions:
+## Modules:
+Modules are still a WIP, they will allow you to make edits to the site, and in the future you can apply for your module to be added to a store-like page, where people can activate them! They will be able to add new pages to nav, themes, + more!
+
 ## Project Structure:
 The project structure is meant to be very modular, and easy to grasp what things are, and where they would be.
 
