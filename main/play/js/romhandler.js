@@ -31,7 +31,7 @@ function assembleRomLink() {
     return newLink;
   } else if (console == "gbc") {
     ext = ".7z";
-  } else if (console == "segamd") {
+  } else if (console == "segaMD") {
     ext = ".7z";
   } else {
     ext = ".zip";

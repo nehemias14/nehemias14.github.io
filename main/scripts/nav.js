@@ -35,7 +35,6 @@ options.addEventListener("click", function () {
   window.location = optionsLink;
 });
 
-
 /* Theme handling */
 
 function themeValue(toggleState) {

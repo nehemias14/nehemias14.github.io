@@ -6,7 +6,7 @@
   font-weight: 600;
   font-size: 5vw;
 
-  color: var(--text-color);
+  color: var(--primary-accent);
 
   margin: 10px;
 }
@@ -84,7 +84,7 @@
   background-position: right;
   transition: background-position 2s ease;
   transition: 1s ease;
-  box-shadow: 0 0 2vw #61e7ff;
+  box-shadow: 0 0 2vw var(--primary-accent);
   filter: blur(0vw);
 }
 
@@ -102,14 +102,14 @@
   background-position: right;
   transition: background-position 2s ease;
   transition: 1s ease;
-  box-shadow: 0 0 2vw #fc2424;
+  box-shadow: 0 0 2vw var(--secondary-accent);
   filter: blur(0vw);
 }
 
 .glow-1 {
   height: 30vh;
   width: 30vw;
-  background: #499CAE;
+  background: var(--primary-accent);
 filter: blur(12vw);
 position: absolute;
 top: 50vh;
@@ -120,7 +120,7 @@ z-index: -1;
 .glow-2 {
   height: 30vh;
   width: 30vw;
-  background: #ad3535;
+  background: var(--secondary-accent);
 filter: blur(12vw);
 position: absolute;
 top: 50vh;
@@ -131,7 +131,7 @@ z-index: -1;
 .glow-3 {
   height: 30vh;
   width: 30vw;
-  background: #894592;
+  background: var(--link-color);
 filter: blur(12vw);
 position: absolute;
 top: 25vh;

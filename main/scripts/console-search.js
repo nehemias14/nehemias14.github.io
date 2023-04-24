@@ -10,3 +10,20 @@ goSearch.addEventListener("click", function() {
     let locations = home + "main/search/index.html?console=" + fileName + "&s=" + searchBar.value;
     window.location = locations;
 });
+
+document.addEventListener('keydown', function(event) {
+    if (event.code === 'Enter') { // check if spacebar key is pressed
+    let home = findHome();
+    console.log("real")
+    var fileName = location.href.split("/").slice(-1).toString().replace(".html", "").split("?")[0];
+    if (home == "../../") {
+      home = "../../../";
+  }
+      if (goSearch.input !== "") {
+        console.log("more real")
+        let locations = home + "main/search/index.html?console=" + fileName + "&s=" + searchBar.value;
+        window.location = locations;
+      }
+    }
+  });
+  

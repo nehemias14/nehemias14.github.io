@@ -13,7 +13,7 @@
 /* Themes */
 
 :root {
-  --bg-color: #000000;
+  --bg-color: rgb(0, 0, 0);
   --primary-accent: #81e8ff;
   --secondary-accent: rgb(251, 29, 29);
   --text-color: #ffffff;
@@ -21,7 +21,7 @@
 }
 
 [data-theme="dark"] {
-  --bg-color: #000000;
+  --bg-color: rgb(0, 0, 0);
   --primary-accent: #81e8ff;
   --secondary-accent: rgb(251, 29, 29);
   --text-color: #ffffff;
@@ -29,7 +29,7 @@
 }
 
 [data-theme="sunset"] {
-  --bg-color: #000000;
+  --bg-color: rgb(0, 0, 0);
   --primary-accent: #ff7f00;
   --secondary-accent: #7a000a;
   --text-color: #ffffff;
@@ -111,6 +111,7 @@ a {
   height: 10vh;
   width: 100%;
   background: var(--bg-color);
+  box-shadow: 5px 0 5px 0 var(--primary-accent);
 }
 
 .page-title {
@@ -149,5 +150,15 @@ a {
   margin: 10px;
   position: fixed;
   bottom: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   left: 0;
+}
+
+.ghLogo {
+  width: 4vh;
+  margin: 10px;
+  color: white;
 }
