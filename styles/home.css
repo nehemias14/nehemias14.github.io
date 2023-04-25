@@ -15,6 +15,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 5vh;
   height: 30vw;
   flex-direction: column;
 }
@@ -70,6 +71,27 @@
   filter: blur(0.026vw);
 }
 
+.alt-button {
+  background: linear-gradient(
+    to right,
+    #59b7f5 0%,
+    #9089f7 20.83%,
+    #f18eec 48.96%,
+    #f99bca 75%,
+    #fa43eb 100%
+  );
+  border-radius: 1vw;
+  height: 8vh;
+  font-family: "Space Grotesk";
+  border: none;
+  font-weight: bold;
+  font-size: 2vw;
+  width: 14vw;
+  margin: 1vw;
+  box-shadow: 0 0 2vw #9d95ff;
+  filter: blur(0.026vw);
+}
+
 .singleplayer-button:hover {
   background: linear-gradient(
     to right,
@@ -105,6 +127,27 @@
   box-shadow: 0 0 2vw var(--secondary-accent);
   filter: blur(0vw);
 }
+
+
+.alt-button:hover {
+  background: linear-gradient(
+    to right,
+    #59def5 0%,
+    #1d04ff 20.83%,
+    #f050ff 48.96%,
+    #cd9bf9 75%,
+    #ff95fa 100%
+  );
+  color: black;
+  background-size: 200% 100%;
+  background-position: right;
+  transition: background-position 2s ease;
+  transition: 1s ease;
+  box-shadow: 0 0 2vw var(--link-color);
+  filter: blur(0vw);
+}
+
+
 
 .glow-1 {
   height: 30vh;
