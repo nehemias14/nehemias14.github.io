@@ -1,8 +1,12 @@
-# GBA2.0-Beta
+# GBA 2.0
+
+## Need more deployment help?
+Click [here!](docs/deployment.md)
 
 ## What is this?
 This is the successor to our GBA site.
-## What new features will it have?
+
+## What new features does it have?
 Enhanced console-wide search, Global Search, Multiplayer Support (Made by us, doesn't use Netplay), faster in general, less cluttered, cleaner UI + More!
 
 ## Multiplayer:
