@@ -39,22 +39,32 @@ options.addEventListener("click", function () {
 
 function themeValue(toggleState) {
   if (toggleState == 1) {
-      document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.setAttribute('data-theme', 'dark');
     localStorage.setItem('theme', 'dark');
   }
   if (toggleState == 2) {
-      document.documentElement.setAttribute('data-theme', 'sunset');
+    document.documentElement.setAttribute('data-theme', 'sunset');
     
     localStorage.setItem('theme', 'sunset');
   }
   if (toggleState == 3) {
-      document.documentElement.setAttribute('data-theme', 'synthwave');
+    document.documentElement.setAttribute('data-theme', 'synthwave');
     
     localStorage.setItem('theme', 'synthwave');
   }
   if (toggleState == 4) {
     document.documentElement.setAttribute('data-theme', 'red');
   
-  localStorage.setItem('theme', 'red');
-}
+    localStorage.setItem('theme', 'red');
+  }
+  if (toggleState == 5) {
+    document.documentElement.setAttribute('data-theme', 'green');
+  
+    localStorage.setItem('theme', 'green');
+  }
+  if (toggleState == 6) {
+    document.documentElement.setAttribute('data-theme', 'legacy-green');
+  
+    localStorage.setItem('theme', 'legacy-green');
+  }
 }

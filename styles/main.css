@@ -52,6 +52,22 @@
   --link-color: #4C4CA9FF;
 }
 
+[data-theme="green"] {
+  --bg-color: #000000FF;
+  --primary-accent: #00ff90;
+  --secondary-accent: #00b264;
+  --text-color: #00b264;
+  --link-color: #4C4CA9FF;
+}
+
+[data-theme="legacy-green"] {
+  --bg-color: #06b44e;
+  --primary-accent: #063810;
+  --secondary-accent: #0a5e1a;
+  --text-color: #056546 ;
+  --link-color: #4C4CA9FF;
+}
+
 
 
 
