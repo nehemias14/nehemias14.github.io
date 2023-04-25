@@ -39,7 +39,7 @@ options.addEventListener("click", function () {
 
 function themeValue(toggleState) {
   if (toggleState == 1) {
-      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.setAttribute('data-theme', 'dark');
     localStorage.setItem('theme', 'dark');
   }
   if (toggleState == 2) {
@@ -48,8 +48,13 @@ function themeValue(toggleState) {
     localStorage.setItem('theme', 'sunset');
   }
   if (toggleState == 3) {
-      document.documentElement.setAttribute('data-theme', 'pink');
+      document.documentElement.setAttribute('data-theme', 'synthwave');
     
-    localStorage.setItem('theme', 'pink');
+    localStorage.setItem('theme', 'synthwave');
   }
+  if (toggleState == 4) {
+    document.documentElement.setAttribute('data-theme', 'red');
+  
+  localStorage.setItem('theme', 'red');
+}
 }

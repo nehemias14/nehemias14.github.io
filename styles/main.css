@@ -36,6 +36,22 @@
   --link-color: #fff566;
 }
 
+[data-theme="synthwave"] {
+  --bg-color: #000000FF;
+  --primary-accent: #B63F83FF;
+  --secondary-accent: #9E2083FF;
+  --text-color: #731F7AFF;
+  --link-color: #6EBDEAFF;
+}
+
+[data-theme="red"] {
+  --bg-color: #000000FF;
+  --primary-accent: #830000FF;
+  --secondary-accent: #C00000FF;
+  --text-color: #D43333FF;
+  --link-color: #4C4CA9FF;
+}
+
 
 
 
