@@ -40,22 +40,26 @@
   justify-content: center;
   align-items: center;
   margin: 3vw;
-  box-shadow: 0 0 0.2vw var(--primary-accent);
   filter: brightness(1.1)
 }
 
-.selection-box.primary {
-  background: var(--primary-accent) !important;
-  box-shadow: 0 0 0.2vw var(--secondary-accent) !important;
-}
-
-.selection-box.secondary {
-  background: var(--secondary-accent) !important;
+.selection-box.gba {
+  background: var(--gba) !important;
   box-shadow: 0 0 0.2vw var(--primary-accent) !important;
 }
 
-.selection-box.font {
-  background: var(--link-color) !important;
+.selection-box.nes {
+  background: var(--nes) !important;
+  box-shadow: 0 0 0.2vw var(--primary-accent) !important;
+}
+
+.selection-box.ds {
+  background: var(--ds) !important;
+  box-shadow: 0 0 0.2vw var(--primary-accent) !important;
+}
+
+.selection-box.sega {
+  background: var(--sega) !important;
   box-shadow: 0 0 0.2vw var(--primary-accent) !important;
 }
 

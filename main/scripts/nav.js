@@ -1,5 +1,7 @@
 const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
 document.documentElement.setAttribute('data-theme', currentTheme);
+const currentFont = localStorage.getItem('font-color') ? localStorage.getItem('font-color') : null;
+document.documentElement.setAttribute('data-icon-theme', currentFont);
 /* 
     This script is used for the navigation buttons, and their functions
     This script is located on every page that the navigation bar is on
@@ -66,5 +68,17 @@ function themeValue(toggleState) {
     document.documentElement.setAttribute('data-theme', 'legacy-green');
   
     localStorage.setItem('theme', 'legacy-green');
+  }
+}
+
+function iconColorValue(toggleState) {
+  if (toggleState == 1) {
+    document.documentElement.setAttribute('data-icon-theme', 'new');
+    localStorage.setItem('font-color', 'new');
+    console.log("work")
+  }
+  if (toggleState == 2) {
+    document.documentElement.setAttribute('data-icon-theme', 'old');
+    localStorage.setItem('font-color', 'old');
   }
 }

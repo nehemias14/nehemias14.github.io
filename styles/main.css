@@ -18,6 +18,12 @@
   --secondary-accent: rgb(251, 29, 29);
   --text-color: #ffffff;
   --link-color: #7b66ff;
+
+
+  --gba: var(--primary-accent);
+  --nes: var(--secondary-accent);
+  --ds: var(--link-color);
+  --sega: var(--text-color);
 }
 
 [data-theme="dark"] {
@@ -68,7 +74,21 @@
   --link-color: #4C4CA9FF;
 }
 
+/* Icon Color Theme */
 
+[data-icon-theme="new"] {
+  --gba: var(--primary-accent);
+  --nes: var(--secondary-accent);
+  --ds: var(--link-color);
+  --sega: var(--text-color);
+}
+
+[data-icon-theme="old"] {
+  --gba: #6ba263;
+  --nes: #b54c4c;
+  --ds: #bc3baf;
+  --sega: #6480ab;
+}
 
 
 /* Main Page Styling */
