@@ -1,7 +1,8 @@
 .selection-container {
   display: flex;
   flex-direction: row;
-  justify-content: left;
+  justify-content: center;
+  align-items: center;
 }
 
 .selection-image {
@@ -9,57 +10,58 @@
   width: 50vw;
 }
 
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(-300px);
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInRightDifferent {
-  from {
-    opacity: 0;
-    transform: translateX(-150px);
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .selection-title {
-  margin-top: 5vh;
   font-family: "Chakra Petch";
   font-style: italic;
   font-weight: bold;
   font-size: 4vw;
-  text-align: left;
+  text-align: center;
+
+  text-decoration-line: underline;
   text-transform: capitalize;
   text-shadow: 0px 0px 3px var(--primary-accent);
 }
 
-.selection-list li {
-  margin-left: 4vw;
+.selection-container div a {
   font-family: "Chakra Petch";
-  font-style: normal;
-  font-size: 1.3vw;
-  /* identical to box height */
+  font-size: 1.8vw;
 
   text-decoration-line: underline;
   text-transform: capitalize;
-  color: var(--link-color);
+  color: #000;
 }
 
-.fade-in-right-image {
-  animation: fadeInRight 0.8s ease-in-out;
+.selection-box {
+  background: var(--primary-accent);
+  border-radius: 5px;
+  width: 20vw;
+  height: 15vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 3vw;
+  box-shadow: 0 0 0.2vw var(--primary-accent);
+  filter: brightness(1.1)
 }
 
-.fade-in-right-title {
-  animation: fadeInRight 1s ease-in-out;
+.selection-box.primary {
+  background: var(--primary-accent) !important;
+  box-shadow: 0 0 0.2vw var(--secondary-accent) !important;
 }
 
-.fade-in-right-list {
-  animation: fadeInRightDifferent 0.9s ease-in-out;
+.selection-box.secondary {
+  background: var(--secondary-accent) !important;
+  box-shadow: 0 0 0.2vw var(--primary-accent) !important;
+}
+
+.selection-box.font {
+  background: var(--link-color) !important;
+  box-shadow: 0 0 0.2vw var(--primary-accent) !important;
+}
+
+.selection-box:hover {
+  transform: scale(1.05);
+  transition: 1s ease;
+  box-shadow: 0 0 0.2vw var(--secondary-accent) !important;
+  filter: brightness(1.2);
 }
