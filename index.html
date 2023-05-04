@@ -46,7 +46,7 @@
     </div>
       <div class="ready-container">
         <img class="main-img" width="30%" height="20%" src="assets/GBA_2_main_2.png" alt="GBA 2.0 Logo"/>
-        <h1 class="ready-txt">Ready to Begin?</h1>
+        <h1 id="randomTitle" class="ready-txt">Welcome back!</h1>
         <div class="button-container">
           <button class="singleplayer-button"><a href="main/singleplayer.html">Singleplayer</a></button>
           <button class="multiplayer-button"><a href="https://discord.gg/math-study-934807331668099142">Alt Links</a></button>
@@ -64,4 +64,27 @@
         <div class="glow-3"></div>
   </body>
   <script src="main/scripts/nav.js"></script>
+  <script>
+    let possibleTitles = [
+    "Guess who's back, back again?",
+    "Welcome back!",
+    "I see you...",
+    "Ready to play?",
+    "Let's go!",
+    "You're back!",
+    "42",
+    "Cattn here!",
+    "Time to play!",
+    "Best GBA Emulator!",
+    "Best NES Emulator!",
+    "Best SNES Emulator!",
+    "Best N64 Emulator!",
+    "Best DS Emulator!",
+    "Wii when!?!??!?"
+];
+
+let randomTitle = possibleTitles[Math.floor(Math.random() * possibleTitles.length)];
+
+document.getElementById("randomTitle").innerHTML = randomTitle;
+  </script>
 </html>
