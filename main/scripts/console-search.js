@@ -7,7 +7,7 @@ goSearch.addEventListener("click", function() {
     if (home == "../../") {
         home = "../../../";
     }
-    let locations = home + "main/search/index.html?console=" + fileName + "&s=" + searchBar.value;
+    let locations = home + "main/search/index.html?" + "s=" + searchBar.value;
     window.location = locations;
 });
 
@@ -21,7 +21,7 @@ document.addEventListener('keydown', function(event) {
   }
       if (goSearch.input !== "") {
         console.log("more real")
-        let locations = home + "main/search/index.html?console=" + fileName + "&s=" + searchBar.value;
+        let locations = home + "main/search/index.html?" + "s=" + searchBar.value;
         window.location = locations;
       }
     }
