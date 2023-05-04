@@ -17,16 +17,13 @@
   font-size: 4vw;
   text-align: center;
 
-  text-decoration-line: underline;
   text-transform: capitalize;
-  text-shadow: 0px 0px 3px var(--primary-accent);
 }
 
 .selection-container div a {
   font-family: "Chakra Petch";
   font-size: 1.8vw;
 
-  text-decoration-line: underline;
   text-transform: capitalize;
   color: #000;
 }
@@ -65,7 +62,11 @@
 
 .selection-box:hover {
   transform: scale(1.05);
-  transition: 1s ease;
+  transition: 0.3s ease;
   box-shadow: 0 0 0.2vw var(--secondary-accent) !important;
-  filter: brightness(1.2);
+  filter: brightness(1.4);
+}
+
+hr {
+  border: var(--primary-accent) 1px solid;
 }
