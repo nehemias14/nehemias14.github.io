@@ -34,7 +34,13 @@ back.addEventListener("click", function () {
 });
 
 options.addEventListener("click", function () {
-  window.location = optionsLink;
+  let currentPageUrl = window.location.pathname;
+  let pathArray = currentPageUrl.split("/");
+  if (pathArray == "GBA2.0") {
+    window.location = "/GBA2.0/main/options" // gh pages
+  } else {
+    window.location = optionsLink;
+  }
 });
 
 /* Theme handling */
