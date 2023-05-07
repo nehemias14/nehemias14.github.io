@@ -28,8 +28,10 @@ var index = lunr(function () {
   // Add fuzzy matching modifiers to name field
   this.field("name", {
     boost: 10,
+    fuzzy: true,
     usePipeline: true,
-    threshold: 0.3,
+    trigrams: true,
+    threshold: 0.7,
     tokenizer: lunr.tokenizer,
     term: lunr.tokenizer.term,
   });
@@ -95,25 +97,22 @@ function handleSearchInput() {
         wildcard: lunr.Query.wildcard.TRAILING | lunr.Query.wildcard.LEADING,
         usePipeline: true,
       });
-      q.term(query, {
-        boost: 10,
-        wildcard: lunr.Query.wildcard.TRAILING | lunr.Query.wildcard.LEADING,
-        usePipeline: true,
-      });
     });
   
     // Loop through search results and show
     if (results.length > 0) {
-      var numResults = Math.min(results.length, 1000); // Limit to 50 results
+      var numResults = Math.min(results.length, 50); // Limit to 1000 results
       for (var i = 0; i < numResults; i++) {
         var result = results[i];
         var game = filteredGamesByConsole.find(function (g) {
           return g.name === result.ref;
         });
+        console.log(game);
         var li = document.createElement("li");
         if (game) {
-          li.textContent = game.name.replace(/_/g, ' '); // Remove all underscores from the game name
           li.classList.add(game.console);
+          li.textContent = game.name;
+          console.log(game);
         } else {
           li.textContent = "No Games Found";
         }
