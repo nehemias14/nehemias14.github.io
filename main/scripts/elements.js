@@ -51,7 +51,7 @@ class RomList extends HTMLElement {
             } else if (providedConsole == "n64") {
                 return "n64";
             } else if (providedConsole == "gbc") {
-                return "gbc";
+                return "gb";
             } else if (providedConsole == "segamd") {
                 return "segaMD";
             } else {
