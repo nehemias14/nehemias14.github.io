@@ -50,3 +50,7 @@
     box-shadow: 0 0 1vw var(--primary-accent);
     transform: scale(1.05);
   }
+
+  #game {
+    height: 60vh;
+  }
