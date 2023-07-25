@@ -31,6 +31,8 @@ function assembleRomLink() {
     return newLink;
   } else if (console == "gbc") {
     ext = ".7z";
+    let newLink = romLocation + "gbc-alt/" + providedGame + ext; // Assemble the link
+    return newLink;
   } else if (console == "segaMD") {
     ext = ".7z";
   } else {
