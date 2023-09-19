@@ -4,11 +4,12 @@
   font-family: "Chakra Petch";
   font-style: normal;
   font-weight: 600;
-  font-size: 5vw;
+  font-size: 3vw;
 
   color: var(--primary-accent);
 
   margin: 1vh;
+  text-align: center;
 }
 
 .ready-container {

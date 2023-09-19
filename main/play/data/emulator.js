@@ -1,42 +1,46 @@
 class EmulatorJS {
-    version = 3; //Increase by 1 when cores are updated
+    version = 10; //Increase by 1 when cores are updated
     getCore(generic) {
         const core = this.config.system;
         /*todo:
-        Systems: TurboGrafs-16 (pce), Wanderswan (ws), ngp, msx
+        Systems: msx
         
         Cores:
-        - Beetle NeoPop
-        - Beetle WonderSwan
         - FreeChaF
         - FreeIntv
-        - Gearcoleco
         - NeoCD
         - O2EM
-        - ParaLLEl N64
         - Vecx
         */
         if (generic) {
             const options = {
                 'a5200': 'atari5200',
+                'beetle_vb': 'vb',
                 'desmume2015': 'nds',
                 'fbalpha2012_cps1': 'arcade',
                 'fbalpha2012_cps2': 'arcade',
                 'fbneo': 'arcade',
                 'fceumm': 'nes',
                 'gambatte': 'gb',
+                'gearcoleco': 'coleco',
                 'genesis_plus_gx': 'sega',
                 'handy': 'lynx',
                 'mame2003': 'mame2003',
+                'mame2003_plus': 'mame2003',
+                'mednafen_ngp': 'ngp',
+                'mednafen_pce': 'pce',
+                'mednafen_pcfx': 'pcfx',
                 'mednafen_psx_hw': 'psx',
-                'beetle_vb': 'vb',
+                'mednafen_wswan': 'ws',
                 'melonds': 'nds',
                 'mgba': 'gba',
                 'mupen64plus_next': 'n64',
                 'nestopia': 'nes',
                 'opera': '3do',
+                'parallel_n64': 'n64',
                 'pcsx_rearmed': 'psx',
                 'picodrive': 'sega',
+                'ppsspp': 'psp',
                 'prosystem': 'atari7800',
                 'snes9x': 'snes',
                 'stella2014': 'atari2600',
@@ -64,10 +68,19 @@ class EmulatorJS {
             'vb': 'beetle_vb',
             'n64': 'mupen64plus_next',
             'nds': 'melonds',
-            'mame2003': 'mame2003',
+            'mame2003': 'mame2003_plus',
             'arcade': 'fbneo',
             'psx': 'pcsx_rearmed',
-            '3do': 'opera'
+            '3do': 'opera',
+            'psp': 'ppsspp',
+            'pce': 'mednafen_pce',
+            'pcfx': 'mednafen_pcfx',
+            'ngp': 'mednafen_ngp',
+            'ws': 'mednafen_wswan',
+            'coleco': 'gearcoleco',
+        }
+        if (this.isSafari && this.isMobile && this.getCore(true) === "n64") {
+            return "parallel_n64";
         }
         return options[core] || core;
     }
@@ -79,10 +92,15 @@ class EmulatorJS {
         'fbneo': ['zip', '7z'],
         'fceumm': ['fds', 'nes', 'unif', 'unf'],
         'gambatte': ['gb', 'gbc', 'dmg'],
+        'gearcoleco': ['col', 'cv', 'bin', 'rom'],
         'genesis_plus_gx': ['m3u', 'mdx', 'md', 'smd', 'gen', 'bin', 'cue', 'iso', 'chd', 'bms', 'sms', 'gg', 'sg', '68k', 'sgd'],
         'handy': ['lnx'],
         'mame2003': ['zip'],
+        'mednafen_ngp': ['ngp', 'ngc'],
+        'mednafen_pce': ['pce', 'cue', 'ccd', 'iso', 'img', 'bin', 'chd'],
+        'mednafen_pcfx': ['cue', 'ccd', 'toc', 'chd'],
         'mednafen_psx': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
+        'mednafen_wswan': ['ws', 'wsc', 'pc2'],
         'mednafen_psx_hw': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
         'beetle_vb': ['vb', 'vboy', 'bin'],
         'melonds': ['nds'],
@@ -90,8 +108,10 @@ class EmulatorJS {
         'mupen64plus_next': ['n64', 'v64', 'z64', 'bin', 'u1', 'ndd', 'gb'],
         'nestopia': ['fds', 'nes', 'unif', 'unf'],
         'opera': ['iso', 'bin', 'chd', 'cue'],
+        'parallel_n64': ['n64', 'v64', 'z64', 'bin', 'u1', 'ndd', 'gb'],
         'pcsx_rearmed': ['bin', 'cue', 'img', 'mdf', 'pbp', 'toc', 'cbn', 'm3u', 'ccd'],
         'picodrive': ['bin', 'gen', 'smd', 'md', '32x', 'cue', 'iso', 'sms', '68k', 'chd'],
+        'ppsspp': ['elf', 'iso', 'cso', 'prx', 'pbp'],
         'prosystem': ['a78', 'bin'],
         'snes9x': ['smc', 'sfc', 'swc', 'fig', 'bs', 'st'],
         'stella2014': ['a26', 'bin', 'zip'],
@@ -222,13 +242,17 @@ class EmulatorJS {
         })
     }
     constructor(element, config) {
-        this.ejs_version = "4.0.5";
-        this.ejs_num_version = 40.5;
+        this.ejs_version = "4.0.7";
+        this.ejs_num_version = 40.7;
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
+        this.settingsLanguage = window.EJS_settingsLanguage || false;
         this.config = config;
         this.currentPopup = null;
+        this.isFastForward = false;
+        this.isSlowMotion = false;
+        this.rewindEnabled = this.loadRewindEnabled();
         this.touch = false;
         this.cheats = [];
         this.started = false;
@@ -237,9 +261,15 @@ class EmulatorJS {
         this.muted = false;
         this.paused = true;
         this.listeners = [];
+        this.missingLang = [];
         this.setElements(element);
         this.setColor(this.config.color || "");
-        if (this.config.adUrl) this.setupAds(this.config.adUrl);
+        this.config.alignStartButton = (typeof this.config.alignStartButton === "string") ? this.config.alignStartButton : "bottom";
+        this.config.backgroundColor = (typeof this.config.backgroundColor === "string") ? this.config.backgroundColor : "rgb(51, 51, 51)";
+        if (this.config.adUrl) {
+            this.config.adSize = (Array.isArray(this.config.adSize)) ? this.config.adSize : ["300px", "250px"];
+            this.setupAds(this.config.adUrl, this.config.adSize[0], this.config.adSize[1]);
+        }
         this.canvas = this.createElement('canvas');
         this.canvas.classList.add('ejs_canvas');
         this.bindListeners();
@@ -250,6 +280,7 @@ class EmulatorJS {
             (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
             return check;
         })();
+        this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
         this.storage = {
             rom: new window.EJS_STORAGE("EmulatorJS-roms", "rom"),
             bios: new window.EJS_STORAGE("EmulatorJS-bios", "bios"),
@@ -259,16 +290,15 @@ class EmulatorJS {
         
         this.game.classList.add("ejs_game");
         if (typeof this.config.backgroundImg === "string") {
-            this.game.style["background-image"] = "url('"+this.config.backgroundImg+"')";
-            this.game.style["background-size"] = "contain";
-            this.game.style["background-position"] = "center";
-            this.game.style["background-repeat"] = "no-repeat";
+            this.game.classList.add("ejs_game_background");
+            if (this.config.backgroundBlur) this.game.classList.add("ejs_game_background_blur");
+            this.game.setAttribute("style", "--ejs-background-image: url("+this.config.backgroundImg+"); --ejs-background-color: "+this.config.backgroundColor+";");
             this.on("start", () => {
-                this.game.style["background-image"] = "";
-                this.game.style["background-size"] = "";
-                this.game.style["background-position"] = "";
-                this.game.style["background-repeat"] = "";
+                this.game.classList.remove("ejs_game_background");
+                if (this.config.backgroundBlur) this.game.classList.remove("ejs_game_background_blur");
             })
+        }else{
+            this.game.setAttribute("style", "--ejs-background-color: "+this.config.backgroundColor+";");
         }
         
         if (Array.isArray(this.config.cheats)) {
@@ -312,16 +342,16 @@ class EmulatorJS {
         }
         this.elements.parent.setAttribute("style", "--ejs-primary-color:" + getColor(color) + ";");
     }
-    setupAds(ads) {
+    setupAds(ads, width, height) {
         const div = this.createElement("div");
+        const time = (typeof this.config.adMode === "number" && this.config.adMode > -1 && this.config.adMode < 3) ? this.config.adMode : 2;
         div.classList.add("ejs_ad_iframe");
         const frame = this.createElement("iframe");
         frame.src = ads;
         frame.setAttribute("scrolling", "no");
         frame.setAttribute("frameborder", "no");
-        frame.style.width = "300px";
-        frame.style.height = "250px";
-        
+        frame.style.width = width;
+        frame.style.height = height;
         const closeParent = this.createElement("div");
         closeParent.classList.add("ejs_ad_close");
         const closeButton = this.createElement("a");
@@ -329,20 +359,38 @@ class EmulatorJS {
         closeParent.setAttribute("hidden", "");
         div.appendChild(closeParent);
         div.appendChild(frame);
-        this.elements.parent.appendChild(div);
+        if (this.config.adMode !== 1) {
+            this.elements.parent.appendChild(div);
+        }
         this.addEventListener(closeButton, "click", () => {
             div.remove();
+        })
+        
+        this.on("start-clicked", () => {
+            if (this.config.adMode === 0) div.remove();
+            if (this.config.adMode === 1){
+                this.elements.parent.appendChild(div);
+            }
         })
         
         this.on("start", () => {
             closeParent.removeAttribute("hidden");
             const time = (typeof this.config.adTimer === "number" && this.config.adTimer > 0) ? this.config.adTimer : 10000;
+            if (this.config.adTimer === -1) div.remove();
             if (this.config.adTimer === 0) return;
             setTimeout(() => {
                 div.remove();
             }, time);
         })
         
+    }
+    adBlocked(url, del){
+        if (del){
+            document.querySelector('div[class="ejs_ad_iframe"]').remove();
+        }else{
+            document.querySelector('iframe[src="'+this.config.adUrl+'"]').src = url;
+            this.config.adUrl = url;
+        }
     }
     functions = {};
     on(event, func) {
@@ -372,7 +420,17 @@ class EmulatorJS {
     createStartButton() {
         const button = this.createElement("div");
         button.classList.add("ejs_start_button");
+        let border = 0;
+        if (typeof this.config.backgroundImg === "string"){
+            button.classList.add("ejs_start_button_border");
+            border = 1;
+        }
         button.innerText = this.localization("Start Game");
+        if (this.config.alignStartButton == "top"){
+            button.style.bottom = "calc(100% - 20px)";
+        }else if (this.config.alignStartButton == "center"){
+            button.style.bottom = "calc(50% + 22.5px + "+border+"px)";
+        }
         this.elements.parent.appendChild(button);
         this.addEventListener(button, "touchstart", () => {
             this.touch = true;
@@ -381,8 +439,12 @@ class EmulatorJS {
         if (this.config.startOnLoad === true) {
             this.startButtonClicked(button);
         }
+        setTimeout(() => {
+            this.callEvent("ready");
+        }, 20);
     }
     startButtonClicked(e) {
+        this.callEvent("start-clicked");
         if (e.pointerType === "touch") {
             this.touch = true;
         }
@@ -399,13 +461,18 @@ class EmulatorJS {
     createText() {
         this.textElem = this.createElement("div");
         this.textElem.classList.add("ejs_loading_text");
+        if (typeof this.config.backgroundImg === "string") this.textElem.classList.add("ejs_loading_text_glow");
         this.textElem.innerText = this.localization("Loading...");
         this.elements.parent.appendChild(this.textElem);
     }
-    localization(text) {
-        if (!isNaN(text)) return text;
+    localization(text, log) {
+        if (typeof text === "undefined") return;
+        text = text.toString();
+        if (text.includes("EmulatorJS v")) return text;
         if (this.config.langJson) {
-            if (!this.config.langJson[text]) {
+            if (typeof log === "undefined") log = true;
+            if (!this.config.langJson[text] && log) {
+                if (!this.missingLang.includes(text)) this.missingLang.push(text);
                 console.log("Translation not found for '"+text+"'. Language set to '"+this.config.language+"'");
             }
             return this.config.langJson[text] || text;
@@ -535,6 +602,12 @@ class EmulatorJS {
     }
     downloadGameCore() {
         this.textElem.innerText = this.localization("Download Game Core");
+        if (this.config.threads && ((typeof window.SharedArrayBuffer) !== "function")) {
+            this.textElem.innerText = this.localization('Error for site owner')+"\n"+this.localization("Check console");
+            this.textElem.style.color = "red";
+            console.warn("Threads is set to true, but the SharedArrayBuffer function is not exposed. Threads requires 2 headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
+            return;
+        }
         const gotCore = (data) => {
             this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Core")).then((data) => {
                 let js, thread, wasm;
@@ -555,7 +628,8 @@ class EmulatorJS {
                 gotCore(result.data);
                 return;
             }
-            this.downloadFile('cores/'+this.getCore()+'-wasm.data', (res) => {
+            let corePath = 'cores/'+this.getCore()+(this.config.threads ? "-thread" : "")+'-wasm.data';
+            this.downloadFile(corePath, (res) => {
                 if (res === -1) {
                     this.textElem.innerText = this.localization('Network Error');
                     this.textElem.style.color = "red";
@@ -572,12 +646,6 @@ class EmulatorJS {
         })
     }
     initGameCore(js, wasm, thread) {
-        if (thread && ((typeof window.SharedArrayBuffer) !== "function")) {
-            this.textElem.innerText = this.localization('Error for site owner')+"\n"+this.localization("Check console");
-            this.textElem.style.color = "red";
-            console.warn("The "+this.getCore()+" core requires threads, but threads requires 2 headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
-            return;
-        }
         this.initModule(wasm, thread);
         let script = this.createElement("script");
         script.src = URL.createObjectURL(new Blob([js], {type: "application/javascript"}));
@@ -793,27 +861,44 @@ class EmulatorJS {
         })
     }
     downloadRom() {
-        return new Promise((resolve, reject) => {
-            
+        const extractFileNameFromUrl = url => {
+            if (!url) return null;
+            return url.split('/').pop().split("#")[0].split("?")[0];
+        };
+        const supportsExt = (ext) => {
+            const core = this.getCore();
+            if (!this.extensions[core]) return false;
+            return this.extensions[core].includes(ext);
+        };
+
+        return new Promise(resolve => {
             this.textElem.innerText = this.localization("Download Game Data");
+
             const gotGameData = (data) => {
                 if (['arcade', 'mame2003'].includes(this.getCore(true))) {
-                    this.fileName = this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+                    this.fileName = extractFileNameFromUrl(this.config.gameUrl);
                     FS.writeFile(this.fileName, new Uint8Array(data));
                     resolve();
                     return;
                 }
-                
-                let resData = {};
-                const isPsx = (this.getCore(true) === "psx" && this.getCore() !== "pcsx_rearmed");
-                const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+
+                const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : extractFileNameFromUrl(this.config.gameUrl);
+
+                let disableCue = false;
+                if (['pcsx_rearmed', 'genesis_plus_gx', 'picodrive', 'mednafen_pce'].includes(this.getCore()) && this.config.disableCue === undefined) {
+                    disableCue = true;
+                } else {
+                    disableCue = this.config.disableCue;
+                }
+
+                let fileNames = [];
                 this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
                     if (fileName.includes("/")) {
                         const paths = fileName.split("/");
                         let cp = "";
                         for (let i=0; i<paths.length-1; i++) {
                             if (paths[i] === "") continue;
-                            cp += "/"+paths[i];
+                            cp += `/${paths[i]}`;
                             if (!FS.analyzePath(cp).exists) {
                                 FS.mkdir(cp);
                             }
@@ -823,50 +908,59 @@ class EmulatorJS {
                         FS.mkdir(fileName);
                         return;
                     }
-                    if (isPsx && ["m3u", "cue"].includes(fileName.split(".").pop().toLowerCase())) {
-                        resData[fileName] = fileData;
-                    } else if (fileName !== "!!notCompressedData") {
-                        resData[fileName] = true;
-                    }
                     if (fileName === "!!notCompressedData") {
                         FS.writeFile(altName, fileData);
-                        resData[altName] = true;
+                        fileNames.push(altName);
                     } else {
-                        FS.writeFile("/"+fileName, fileData);
+                        FS.writeFile(`/${fileName}`, fileData);
+                        fileNames.push(fileName);
                     }
                 }).then(() => {
-                    const fileNames = (() => {
-                        let rv = [];
-                        for (const k in resData) rv.push(k);
-                        return rv;
-                    })();
-                    if (fileNames.length === 1) fileNames[0] = altName;
-                    let execFile = null;
-                    if (isPsx) {
-                        //Not needed for pcsx_rearmed core
-                        execFile = this.gameManager.createCueFile(fileNames);
-                    }
-                    
-                    for (const k in resData) {
-                        if (k === "!!notCompressedData") {
-                            if (isPsx && execFile !== null) {
-                                this.fileName = execFile;
+                    let isoFile = null;
+                    let supportedFile = null;
+                    let cueFile = null;
+                    let selectedCueExt = null;
+                    fileNames.forEach(fileName => {
+                        const ext = fileName.split('.').pop().toLowerCase();
+                        if (supportedFile === null && supportsExt(ext)) {
+                            supportedFile = fileName;
+                        }
+                        if (isoFile === null && ['iso', 'cso', 'chd', 'elf'].includes(ext)) {
+                            isoFile = fileName;
+                        }
+                        if (['cue', 'ccd', 'toc', 'm3u'].includes(ext)) {
+                            if (this.getCore(true) === 'psx') {
+                                //always prefer m3u files for psx cores
+                                if (selectedCueExt !== 'm3u') {
+                                    if (cueFile === null || ext === 'm3u') {
+                                        cueFile = fileName;
+                                        selectedCueExt = ext;
+                                    }
+                                }
                             } else {
-                                this.fileName = altName;
+                                //prefer cue or ccd files over toc or m3u
+                                if (!['cue', 'ccd'].includes(selectedCueExt)) {
+                                    if (cueFile === null || ['cue', 'ccd'].includes(ext)) {
+                                        cueFile = fileName;
+                                        selectedCueExt = ext;
+                                    }
+                                }
                             }
-                            break;
                         }
-                        if (!this.fileName || ((this.extensions[this.getCore()] || []).includes(k.split(".").pop()) &&
-                            //always prefer m3u files for psx cores
-                            !(this.getCore(true) === "psx" && ["m3u", "ccd"].includes(this.fileName.split(".").pop())))) {
-                            this.fileName = k;
-                        }
-                        if (isPsx && execFile === null && ["m3u", "cue"].includes(k.split(".").pop().toLowerCase())) {
-                            FS.writeFile("/"+k, resData[k]);
-                        }
+                    });
+                    if (supportedFile !== null) {
+                        this.fileName = supportedFile;
+                    } else {
+                        this.fileName = fileNames[0];
                     }
-                    if (isPsx && execFile !== null) {
-                        this.fileName = execFile;
+                    if (isoFile !== null && (supportsExt('iso') || supportsExt('cso') || supportsExt('chd') || supportsExt('elf'))) {
+                        this.fileName = isoFile;
+                    } else if (supportsExt('cue') || supportsExt('ccd') || supportsExt('toc') || supportsExt('m3u')) {
+                        if (cueFile !== null) {
+                            this.fileName = cueFile;
+                        } else if (!disableCue) {
+                            this.fileName = this.gameManager.createCueFile(fileNames);
+                        }
                     }
                     resolve();
                 });
@@ -961,7 +1055,6 @@ class EmulatorJS {
             if (this.debug) console.log(args);
             this.Module.callMain(args);
             this.Module.resumeMainLoop();
-            
             this.checkSupportedOpts();
             this.setupSettingsMenu();
             this.loadSettings();
@@ -978,6 +1071,14 @@ class EmulatorJS {
             this.paused = false;
             if (this.touch) {
                 this.virtualGamepad.style.display = "";
+            }
+            this.handleResize();
+            if (this.config.fullscreenOnLoad) {
+                try {
+                    this.toggleFullscreen(true);
+                } catch(e) {
+                    if (this.debug) console.warn("Could not fullscreen on load");
+                }
             }
         } catch(e) {
             console.warn("failed to start game", e);
@@ -1064,7 +1165,7 @@ class EmulatorJS {
             }
             a.href = "#";
             a.onclick = "return false";
-            a.innerText = title;
+            a.innerText = this.localization(title);
             li.appendChild(a);
             parent.appendChild(li);
             hideMenu();
@@ -1123,7 +1224,7 @@ class EmulatorJS {
                 }
                 a.href = "#";
                 a.onclick = "return false";
-                a.innerText = title;
+                a.innerText = this.localization(title);
                 li.appendChild(a);
                 parent.appendChild(li);
                 hideMenu();
@@ -1348,6 +1449,7 @@ class EmulatorJS {
             svg.innerHTML = image;
             const text = this.createElement("span");
             text.innerText = this.localization(title);
+            if (title == "Enter Fullscreen" || title == "Exit Fullscreen") text.classList.add("ejs_menu_text_right");
             text.classList.add("ejs_menu_text");
             
             button.classList.add("ejs_menu_button");
@@ -1423,7 +1525,6 @@ class EmulatorJS {
         this.pause = (dontUpdate) => {
             if (!this.paused) this.togglePlaying(dontUpdate);
         }
-        
         
         let stateUrl;
         const saveState = addButton("Save State", '<svg viewBox="0 0 448 512"><path fill="currentColor" d="M433.941 129.941l-83.882-83.882A48 48 0 0 0 316.118 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V163.882a48 48 0 0 0-14.059-33.941zM224 416c-35.346 0-64-28.654-64-64 0-35.346 28.654-64 64-64s64 28.654 64 64c0 35.346-28.654 64-64 64zm96-304.52V212c0 6.627-5.373 12-12 12H76c-6.627 0-12-5.373-12-12V108c0-6.627 5.373-12 12-12h228.52c3.183 0 6.235 1.264 8.485 3.515l3.48 3.48A11.996 11.996 0 0 1 320 111.48z"/></svg>', async () => {
@@ -1546,10 +1647,11 @@ class EmulatorJS {
                     e.gain.gain.value = volume;
                 })
             }
-            unmuteButton.style.display = (volume === 0) ? "" : "none";
-            muteButton.style.display = (volume === 0) ? "none" : "";
+            if (!this.config.buttonOpts || this.config.buttonOpts.mute !== false) {
+                unmuteButton.style.display = (volume === 0) ? "" : "none";
+                muteButton.style.display = (volume === 0) ? "none" : "";
+            }
         }
-        if (!this.muted) this.setVolume(this.volume);
         
         this.addEventListener(volumeSlider, "change mousemove touchmove mousedown touchstart mouseup", (e) => {
             setTimeout(() => {
@@ -1559,9 +1661,11 @@ class EmulatorJS {
                 this.setVolume(this.volume);
             }, 5);
         })
-        
-        volumeSettings.appendChild(volumeSlider);
-        
+
+        if (!this.config.buttonOpts || this.config.buttonOpts.volume !== false) {
+            volumeSettings.appendChild(volumeSlider);
+        }
+
         this.elements.menu.appendChild(volumeSettings);
         
         this.settingParent = this.createElement("div");
@@ -1599,42 +1703,51 @@ class EmulatorJS {
         })
         
         const enter = addButton("Enter Fullscreen", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M208 281.4c-12.5-12.5-32.76-12.5-45.26-.002l-78.06 78.07l-30.06-30.06c-6.125-6.125-14.31-9.367-22.63-9.367c-4.125 0-8.279 .7891-12.25 2.43c-11.97 4.953-19.75 16.62-19.75 29.56v135.1C.0013 501.3 10.75 512 24 512h136c12.94 0 24.63-7.797 29.56-19.75c4.969-11.97 2.219-25.72-6.938-34.87l-30.06-30.06l78.06-78.07c12.5-12.49 12.5-32.75 .002-45.25L208 281.4zM487.1 0h-136c-12.94 0-24.63 7.797-29.56 19.75c-4.969 11.97-2.219 25.72 6.938 34.87l30.06 30.06l-78.06 78.07c-12.5 12.5-12.5 32.76 0 45.26l22.62 22.62c12.5 12.5 32.76 12.5 45.26 0l78.06-78.07l30.06 30.06c9.156 9.141 22.87 11.84 34.87 6.937C504.2 184.6 512 172.9 512 159.1V23.1C512 10.74 501.3 0 487.1 0z"/></svg>', () => {
-            if (this.elements.parent.requestFullscreen) {
-                this.elements.parent.requestFullscreen();
-            } else if (this.elements.parent.mozRequestFullScreen) {
-                this.elements.parent.mozRequestFullScreen();
-            } else if (this.elements.parent.webkitRequestFullscreen) {
-                this.elements.parent.webkitRequestFullscreen();
-            } else if (this.elements.parent.msRequestFullscreen) {
-                this.elements.parent.msRequestFullscreen();
-            }
-            exit.style.display = "";
-            enter.style.display = "none";
-            if (this.isMobile) {
-                try {
-                    screen.orientation.lock(this.getCore(true) === "nds" ? "portrait" : "landscape").catch(e => {});;
-                } catch(e) {}
-            }
+            this.toggleFullscreen(true);
         });
         const exit = addButton("Exit Fullscreen", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M215.1 272h-136c-12.94 0-24.63 7.797-29.56 19.75C45.47 303.7 48.22 317.5 57.37 326.6l30.06 30.06l-78.06 78.07c-12.5 12.5-12.5 32.75-.0012 45.25l22.62 22.62c12.5 12.5 32.76 12.5 45.26 .0013l78.06-78.07l30.06 30.06c6.125 6.125 14.31 9.367 22.63 9.367c4.125 0 8.279-.7891 12.25-2.43c11.97-4.953 19.75-16.62 19.75-29.56V296C239.1 282.7 229.3 272 215.1 272zM296 240h136c12.94 0 24.63-7.797 29.56-19.75c4.969-11.97 2.219-25.72-6.938-34.87l-30.06-30.06l78.06-78.07c12.5-12.5 12.5-32.76 .0002-45.26l-22.62-22.62c-12.5-12.5-32.76-12.5-45.26-.0003l-78.06 78.07l-30.06-30.06c-9.156-9.141-22.87-11.84-34.87-6.937c-11.97 4.953-19.75 16.62-19.75 29.56v135.1C272 229.3 282.7 240 296 240z"/></svg>', () => {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-            }
-            exit.style.display = "none";
-            enter.style.display = "";
-            if (this.isMobile) {
-                try {
-                    screen.orientation.unlock();
-                } catch(e) {}
-            }
+            this.toggleFullscreen(false);
         });
         exit.style.display = "none";
+        
+        this.toggleFullscreen = (fullscreen) => {
+            if (fullscreen) {
+                if (this.elements.parent.requestFullscreen) {
+                    this.elements.parent.requestFullscreen();
+                } else if (this.elements.parent.mozRequestFullScreen) {
+                    this.elements.parent.mozRequestFullScreen();
+                } else if (this.elements.parent.webkitRequestFullscreen) {
+                    this.elements.parent.webkitRequestFullscreen();
+                } else if (this.elements.parent.msRequestFullscreen) {
+                    this.elements.parent.msRequestFullscreen();
+                }
+                exit.style.display = "";
+                enter.style.display = "none";
+                if (this.isMobile) {
+                    try {
+                        screen.orientation.lock(this.getCore(true) === "nds" ? "portrait" : "landscape").catch(e => {});;
+                    } catch(e) {}
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                exit.style.display = "none";
+                enter.style.display = "";
+                if (this.isMobile) {
+                    try {
+                        screen.orientation.unlock();
+                    } catch(e) {}
+                }
+            }
+        }
+        
         
         this.addEventListener(document, "webkitfullscreenchange mozfullscreenchange fullscreenchange", (e) => {
             if (e.target !== this.elements.parent) return;
@@ -1682,6 +1795,10 @@ class EmulatorJS {
             if (this.config.buttonOpts.fullscreen === false) {
                 enter.style.display = "none";
                 exit.style.display = "none";
+            }
+            if (this.config.buttonOpts.mute === false) {
+                muteButton.style.display = "none";
+                unmuteButton.style.display = "none";
             }
             if (this.config.buttonOpts.saveState === false) saveState.style.display = "none"
             if (this.config.buttonOpts.loadState === false) loadState.style.display = "none"
@@ -1747,6 +1864,13 @@ class EmulatorJS {
             
         })();
     }
+    getControlScheme() {
+        if (this.config.controlScheme && typeof this.config.controlScheme === 'string') {
+            return this.config.controlScheme;
+        } else {
+            return this.getCore(true);
+        }
+    }
     createControlSettingMenu() {
         let buttonListeners = [];
         this.checkGamepadInputs = () => buttonListeners.forEach(elem => elem());
@@ -1755,6 +1879,7 @@ class EmulatorJS {
         const body = this.createPopup("Control Settings", {
             "Reset": () => {
                 this.controls = JSON.parse(JSON.stringify(this.defaultControllers));
+                this.setupKeys();
                 this.checkGamepadInputs();
                 this.saveSettings();
             },
@@ -1767,119 +1892,336 @@ class EmulatorJS {
                 this.controlMenu.style.display = "none";
             }
         }, true);
+        this.setupKeys();
         this.controlMenu = body.parentElement;
         body.classList.add("ejs_control_body");
         
         let buttons;
-        if ('nes' === this.getCore(true)) {
-            buttons = {
-                8: 'A',
-                0: 'B',
-                2: 'SELECT',
-                3: 'START',
-                4: 'UP',
-                5: 'DOWN',
-                6: 'LEFT',
-                7: 'RIGHT',
-                24: this.localization('QUICK SAVE STATE'),
-                25: this.localization('QUICK LOAD STATE'),
-                26: this.localization('CHANGE STATE SLOT')
-            }
-        } else if ('snes' === this.getCore(true)) {
-            buttons = {
-                0: 'B',
-                1: 'Y',
-                2: 'SELECT',
-                3: 'START',
-                4: 'UP',
-                5: 'DOWN',
-                6: 'LEFT',
-                7: 'RIGHT',
-                8: 'A',
-                9: 'X',
-                10: 'L',
-                11: 'R',
-                24: this.localization('QUICK SAVE STATE'),
-                25: this.localization('QUICK LOAD STATE'),
-                26: this.localization('CHANGE STATE SLOT')
-            };
-        } else if ('n64' === this.getCore(true)) {
-            buttons = {
-                0: 'A',
-                1: 'B',
-                3: 'START',
-                4: 'UP',
-                5: 'DOWN',
-                6: 'LEFT',
-                7: 'RIGHT',
-                10: 'L',
-                11: 'R',
-                12: 'Z',
-                19: 'L STICK UP',
-                18: 'L STICK DOWN',
-                17: 'L STICK LEFT',
-                16: 'L STICK RIGHT',
-                23: 'R STICK UP',
-                22: 'R STICK DOWN',
-                21: 'R STICK LEFT',
-                20: 'R STICK RIGHT',
-                24: this.localization('QUICK SAVE STATE'),
-                25: this.localization('QUICK LOAD STATE'),
-                26: this.localization('CHANGE STATE SLOT')
-            };
-        } else if ('nds' === this.getCore(true)) {
-            buttons = {
-                0: 'B',
-                1: 'Y',
-                2: 'SELECT',
-                3: 'START',
-                4: 'UP',
-                5: 'DOWN',
-                6: 'LEFT',
-                7: 'RIGHT',
-                8: 'A',
-                9: 'X',
-                10: 'L',
-                11: 'R',
-                14: 'Microphone',
-                24: this.localization('QUICK SAVE STATE'),
-                25: this.localization('QUICK LOAD STATE'),
-                26: this.localization('CHANGE STATE SLOT')
-            };
+        if (['nes', 'gb'].includes(this.getControlScheme())) {
+            buttons = [
+                {id: 8, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('snes' === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 9, label: this.localization('X')},
+                {id: 1, label: this.localization('Y')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+                {id: 10, label: this.localization('L')},
+                {id: 11, label: this.localization('R')},
+            ];
+        } else if ('n64' === this.getControlScheme()) {
+            buttons = [
+                {id: 0, label: this.localization('A')},
+                {id: 1, label: this.localization('B')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('D-PAD UP')},
+                {id: 5, label: this.localization('D-PAD DOWN')},
+                {id: 6, label: this.localization('D-PAD LEFT')},
+                {id: 7, label: this.localization('D-PAD RIGHT')},
+                {id: 10, label: this.localization('L')},
+                {id: 11, label: this.localization('R')},
+                {id: 12, label: this.localization('Z')},
+                {id: 19, label: this.localization('STICK UP')},
+                {id: 18, label: this.localization('STICK DOWN')},
+                {id: 17, label: this.localization('STICK LEFT')},
+                {id: 16, label: this.localization('STICK RIGHT')},
+                {id: 23, label: this.localization('C-PAD UP')},
+                {id: 22, label: this.localization('C-PAD DOWN')},
+                {id: 21, label: this.localization('C-PAD LEFT')},
+                {id: 20, label: this.localization('C-PAD RIGHT')},
+            ];
+        } else if ('gba' === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 10, label: this.localization('L')},
+                {id: 11, label: this.localization('R')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('nds' === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 9, label: this.localization('X')},
+                {id: 1, label: this.localization('Y')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+                {id: 10, label: this.localization('L')},
+                {id: 11, label: this.localization('R')},
+                {id: 14, label: this.localization('Microphone')},
+            ];
+        } else if ('vb' === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 10, label: this.localization('L')},
+                {id: 11, label: this.localization('R')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('LEFT D-PAD UP')},
+                {id: 5, label: this.localization('LEFT D-PAD DOWN')},
+                {id: 6, label: this.localization('LEFT D-PAD LEFT')},
+                {id: 7, label: this.localization('LEFT D-PAD RIGHT')},
+                {id: 19, label: this.localization('RIGHT D-PAD UP')},
+                {id: 18, label: this.localization('RIGHT D-PAD DOWN')},
+                {id: 17, label: this.localization('RIGHT D-PAD LEFT')},
+                {id: 16, label: this.localization('RIGHT D-PAD RIGHT')},
+            ];
+        } else if (['segaMD', 'segaCD', 'sega32x'].includes(this.getControlScheme())) {
+            buttons = [
+                {id: 1, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 8, label: this.localization('C')},
+                {id: 10, label: this.localization('X')},
+                {id: 9, label: this.localization('Y')},
+                {id: 11, label: this.localization('Z')},
+                {id: 3, label: this.localization('START')},
+                {id: 2, label: this.localization('MODE')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('segaMS' === this.getControlScheme()) {
+            buttons = [
+                {id: 0, label: this.localization('BUTTON 1 / START')},
+                {id: 8, label: this.localization('BUTTON 2')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('segaGG' === this.getControlScheme()) {
+            buttons = [
+                {id: 0, label: this.localization('BUTTON 1')},
+                {id: 8, label: this.localization('BUTTON 2')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('segaSaturn' === this.getControlScheme()) {
+            buttons = [
+                {id: 1, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 8, label: this.localization('C')},
+                {id: 9, label: this.localization('X')},
+                {id: 10, label: this.localization('Y')},
+                {id: 11, label: this.localization('Z')},
+                {id: 12, label: this.localization('L')},
+                {id: 13, label: this.localization('R')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('3do' === this.getControlScheme()) {
+            buttons = [
+                {id: 1, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 8, label: this.localization('C')},
+                {id: 10, label: this.localization('L')},
+                {id: 11, label: this.localization('R')},
+                {id: 2, label: this.localization('X')},
+                {id: 3, label: this.localization('P')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('atari2600' === this.getControlScheme()) {
+            buttons = [
+                {id: 0, label: this.localization('FIRE')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 3, label: this.localization('RESET')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+                {id: 10, label: this.localization('LEFT DIFFICULTY A')},
+                {id: 12, label: this.localization('LEFT DIFFICULTY B')},
+                {id: 11, label: this.localization('RIGHT DIFFICULTY A')},
+                {id: 13, label: this.localization('RIGHT DIFFICULTY B')},
+                {id: 14, label: this.localization('COLOR')},
+                {id: 15, label: this.localization('B/W')},
+            ];
+        } else if ('atari7800' === this.getControlScheme()) {
+            buttons = [
+                {id: 0, label: this.localization('BUTTON 1')},
+                {id: 8, label: this.localization('BUTTON 2')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 3, label: this.localization('PAUSE')},
+                {id: 9, label: this.localization('RESET')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+                {id: 10, label: this.localization('LEFT DIFFICULTY')},
+                {id: 11, label: this.localization('RIGHT DIFFICULTY')},
+            ];
+        } else if ('lynx' === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 10, label: this.localization('OPTION 1')},
+                {id: 11, label: this.localization('OPTION 2')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('jaguar' === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 1, label: this.localization('C')},
+                {id: 2, label: this.localization('PAUSE')},
+                {id: 3, label: this.localization('OPTION')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('pce' === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('I')},
+                {id: 0, label: this.localization('II')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 3, label: this.localization('RUN')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('ngp' === this.getControlScheme()) {
+            buttons = [
+                {id: 0, label: this.localization('A')},
+                {id: 8, label: this.localization('B')},
+                {id: 3, label: this.localization('OPTION')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('ws' === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('X UP')},
+                {id: 5, label: this.localization('X DOWN')},
+                {id: 6, label: this.localization('X LEFT')},
+                {id: 7, label: this.localization('X RIGHT')},
+                {id: 13, label: this.localization('Y UP')},
+                {id: 12, label: this.localization('Y DOWN')},
+                {id: 10, label: this.localization('Y LEFT')},
+                {id: 11, label: this.localization('Y RIGHT')},
+            ];
+        } else if ('coleco' === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('LEFT BUTTON')},
+                {id: 0, label: this.localization('RIGHT BUTTON')},
+                {id: 9, label: this.localization('1')},
+                {id: 1, label: this.localization('2')},
+                {id: 11, label: this.localization('3')},
+                {id: 10, label: this.localization('4')},
+                {id: 13, label: this.localization('5')},
+                {id: 12, label: this.localization('6')},
+                {id: 15, label: this.localization('7')},
+                {id: 14, label: this.localization('8')},
+                {id: 2, label: this.localization('*')},
+                {id: 3, label: this.localization('#')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ('pcfx' === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('I')},
+                {id: 0, label: this.localization('II')},
+                {id: 9, label: this.localization('III')},
+                {id: 1, label: this.localization('IV')},
+                {id: 10, label: this.localization('V')},
+                {id: 11, label: this.localization('VI')},
+                {id: 3, label: this.localization('RUN')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 12, label: this.localization('MODE1')},
+                {id: 13, label: this.localization('MODE2')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
         } else {
-            buttons = {
-                0: 'B',
-                1: 'Y',
-                2: 'SELECT',
-                3: 'START',
-                4: 'UP',
-                5: 'DOWN',
-                6: 'LEFT',
-                7: 'RIGHT',
-                8: 'A',
-                9: 'X',
-                10: 'L',
-                11: 'R',
-                12: 'L2',
-                13: 'R2',
-                14: 'L3',
-                15: 'R3',
-                19: 'L STICK UP',
-                18: 'L STICK DOWN',
-                17: 'L STICK LEFT',
-                16: 'L STICK RIGHT',
-                23: 'R STICK UP',
-                22: 'R STICK DOWN',
-                21: 'R STICK LEFT',
-                20: 'R STICK RIGHT',
-                24: this.localization('QUICK SAVE STATE'),
-                25: this.localization('QUICK LOAD STATE'),
-                26: this.localization('CHANGE STATE SLOT')
-            };
+            buttons = [
+                {id: 0, label: this.localization('B')},
+                {id: 1, label: this.localization('Y')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+                {id: 8, label: this.localization('A')},
+                {id: 9, label: this.localization('X')},
+                {id: 10, label: this.localization('L')},
+                {id: 11, label: this.localization('R')},
+                {id: 12, label: this.localization('L2')},
+                {id: 13, label: this.localization('R2')},
+                {id: 14, label: this.localization('L3')},
+                {id: 15, label: this.localization('R3')},
+                {id: 19, label: this.localization('L STICK UP')},
+                {id: 18, label: this.localization('L STICK DOWN')},
+                {id: 17, label: this.localization('L STICK LEFT')},
+                {id: 16, label: this.localization('L STICK RIGHT')},
+                {id: 23, label: this.localization('R STICK UP')},
+                {id: 22, label: this.localization('R STICK DOWN')},
+                {id: 21, label: this.localization('R STICK LEFT')},
+                {id: 20, label: this.localization('R STICK RIGHT')},
+            ];
         }
-        if (['arcade', 'mame'].includes(this.getCore(true))) {
-            buttons[2] = this.localization('INSERT COIN');
+        if (['arcade', 'mame'].includes(this.getControlScheme())) {
+            for (const buttonIdx in buttons) {
+                if (buttons[buttonIdx].id === 2) {
+                    buttons[buttonIdx].label = this.localization('INSERT COIN');
+                }
+            }
         }
+        buttons.push(
+            {id: 24, label: this.localization('QUICK SAVE STATE')},
+            {id: 25, label: this.localization('QUICK LOAD STATE')},
+            {id: 26, label: this.localization('CHANGE STATE SLOT')},
+            {id: 27, label: this.localization('FAST FORWARD')},
+            {id: 29, label: this.localization('SLOW MOTION')},
+            {id: 28, label: this.localization('REWIND')}
+        );
         //if (_this.statesSupported === false) {
         //    delete buttons[24];
         //    delete buttons[25];
@@ -1951,16 +2293,47 @@ class EmulatorJS {
             playerTitle.appendChild(gamepadTitle);
             playerTitle.appendChild(leftPadding);
             playerTitle.appendChild(aboutParent);
+            
+            if ((this.touch || navigator.maxTouchPoints > 0) && i === 0) {
+                const vgp = this.createElement("div");
+                vgp.style = "width:25%;float:right;clear:none;padding:0;font-size: 11px;padding-left: 2.25rem;";
+                vgp.classList.add("ejs_control_row");
+                vgp.classList.add("ejs_cheat_row");
+                const input = this.createElement("input");
+                input.type = "checkbox";
+                input.checked = true;
+                input.value = "o";
+                input.id = "ejs_vp";
+                vgp.appendChild(input);
+                const label = this.createElement("label");
+                label.for = "ejs_vp";
+                label.innerText = "Virtual Gamepad";
+                vgp.appendChild(label);
+                label.addEventListener("click", (e) => {
+                    input.checked = !input.checked;
+                    this.changeSettingOption('virtual-gamepad', input.checked ? 'enabled' : "disabled");
+                })
+                this.on("start", (e) => {
+                    if (this.settings["virtual-gamepad"] === "disabled") {
+                        input.checked = false;
+                    }
+                })
+                playerTitle.appendChild(vgp);
+            }
+            
             playerTitle.appendChild(headingPadding);
             
             
             player.appendChild(playerTitle);
             
-            for (const k in buttons) {
+            for (const buttonIdx in buttons) {
+                const k = buttons[buttonIdx].id;
+                const controlLabel = buttons[buttonIdx].label;
+
                 const buttonText = this.createElement("div");
                 buttonText.setAttribute("data-id", k);
                 buttonText.setAttribute("data-index", i);
-                buttonText.setAttribute("data-label", buttons[k]);
+                buttonText.setAttribute("data-label", controlLabel);
                 buttonText.style = "margin-bottom:10px;";
                 buttonText.classList.add("ejs_control_bar");
                 
@@ -1968,7 +2341,7 @@ class EmulatorJS {
                 const title = this.createElement("div");
                 title.style = "width:25%;float:left;font-size:12px;";
                 const label = this.createElement("label");
-                label.innerText = buttons[k]+":";
+                label.innerText = controlLabel+":";
                 title.appendChild(label);
                 
                 const textBoxes = this.createElement("div");
@@ -1996,18 +2369,42 @@ class EmulatorJS {
                     textBox2.value = "";
                     textBox1.value = "";
                     if (this.controls[i][k] && this.controls[i][k].value !== undefined) {
-                        textBox2.value = this.controls[i][k].value;
+                        let value = this.controls[i][k].value.toString();
+                        if (value === " ") value = "space";
+                        value = this.localization(value);
+                        textBox2.value = value;
                     }
-                    if (this.controls[i][k] && this.controls[i][k].value2 !== undefined) {
-                        textBox1.value = this.controls[i][k].value2;
+                    if (this.controls[i][k] && this.controls[i][k].value2 !== undefined && this.controls[i][k].value2 !== "") {
+                        let value2 = this.controls[i][k].value2.toString();
+                        if (value2.includes(":")) {
+                            value2 = value2.split(":");
+                            value2 = this.localization(value2[0]) + ":" + this.localization(value2[1])
+                        } else if (!isNaN(value2)){
+                            value2 = this.localization("BUTTON")+" "+this.localization(value2);
+                        } else {
+                            value2 = this.localization(value2);
+                        }
+                        textBox1.value = value2;
                     }
                 })
                 
                 if (this.controls[i][k] && this.controls[i][k].value) {
-                    textBox2.value = this.controls[i][k].value;
+                    let value = this.controls[i][k].value.toString();
+                    if (value === " ") value = "space";
+                    value = this.localization(value);
+                    textBox2.value = value;
                 }
                 if (this.controls[i][k] && this.controls[i][k].value2) {
-                    textBox1.value = "button " + this.controls[i][k].value2;
+                    let value2 = this.controls[i][k].value2.toString();
+                    if (value2.includes(":")) {
+                        value2 = value2.split(":");
+                        value2 = this.localization(value2[0]) + ":" + this.localization(value2[1])
+                    } else if (!isNaN(value2)){
+                        value2 = this.localization("BUTTON")+" "+this.localization(value2);
+                    } else {
+                        value2 = this.localization(value2);
+                    }
+                    textBox1.value = value2;
                 }
                 
                 textBoxes.appendChild(textBox1Parent);
@@ -2037,7 +2434,7 @@ class EmulatorJS {
                 this.addEventListener(buttonText, "mousedown", (e) => {
                     e.preventDefault();
                     this.controlPopup.parentElement.parentElement.removeAttribute("hidden");
-                    this.controlPopup.innerText = "[ " + buttons[k] + " ]\n"+this.localization("Press Keyboard");
+                    this.controlPopup.innerText = "[ " + controlLabel + " ]\n"+this.localization("Press Keyboard");
                     this.controlPopup.setAttribute("button-num", k);
                     this.controlPopup.setAttribute("player-num", i);
                 })
@@ -2091,74 +2488,253 @@ class EmulatorJS {
     defaultControllers = {
         0: {
             0: {
-                'value': 'x'
+                'value': 'x',
+                'value2': 'BUTTON_2',
+                'keycode': 88
             },
             1: {
-                'value': 's'
+                'value': 's',
+                'value2': 'BUTTON_4',
+                'keycode': 83
             },
             2: {
-                'value': 'v'
+                'value': 'v',
+                'value2': 'SELECT',
+                'keycode': 86
             },
             3: {
-                'value': 'enter'
+                'value': 'enter',
+                'value2': 'START',
+                'keycode': 13
             },
             4: {
-                'value': 'arrowup'
+                'value': 'up arrow',
+                'value2': 'DPAD_UP',
+                'keycode': 38
             },
             5: {
-                'value': 'arrowdown'
+                'value': 'arrowdown',
+                'value2': 'DPAD_DOWN',
+                'keycode': 40
             },
             6: {
-                'value': 'arrowleft'
+                'value': 'arrowleft',
+                'value2': 'DPAD_LEFT',
+                'keycode': 37
             },
             7: {
-                'value': 'arrowright'
+                'value': 'arrowright',
+                'value2': 'DPAD_RIGHT',
+                'keycode': 39
             },
             8: {
-                'value': 'z'
+                'value': 'z',
+                'value2': 'BUTTON_1',
+                'keycode': 90
             },
             9: {
-                'value': 'a'
+                'value': 'a',
+                'value2': 'BUTTON_3',
+                'keycode': 65
             },
             10: {
-                'value': 'q'
+                'value': 'q',
+                'value2': 'LEFT_TOP_SHOULDER',
+                'keycode': 81
             },
             11: {
-                'value': 'e'
+                'value': 'e',
+                'value2': 'RIGHT_TOP_SHOULDER',
+                'keycode': 69
             },
             12: {
-                'value': 'e'
+                'value': 'e',
+                'value2': 'LEFT_BOTTOM_SHOULDER',
+                'keycode': 69
             },
             13: {
-                'value': 'w'
+                'value': 'w',
+                'value2': 'RIGHT_BOTTOM_SHOULDER',
+                'keycode': 87
             },
-            14: {},
-            15: {},
+            14: {
+                'value2': 'LEFT_STICK',
+            },
+            15: {
+                'value2': 'RIGHT_STICK',
+            },
             16: {
-                'value': 'h'
+                'value': 'h',
+                'value2': 'LEFT_STICK_X:+1',
+                'keycode': 72
             },
             17: {
-                'value': 'f'
+                'value': 'f',
+                'value2': 'LEFT_STICK_X:-1',
+                'keycode': 70
             },
             18: {
-                'value': 'g'
+                'value': 'g',
+                'value2': 'LEFT_STICK_Y:+1',
+                'keycode': 71
             },
             19: {
-                'value': 't'
+                'value': 't',
+                'value2': 'LEFT_STICK_Y:-1',
+                'keycode': 84
             },
-            20: {'value': 'l'},
-            21: {'value': 'j'},
-            22: {'value': 'k'},
-            23: {'value': 'i'},
+            20: {
+                'value': 'l',
+                'value2': 'RIGHT_STICK_X:+1',
+                'keycode': 76
+            },
+            21: {
+                'value': 'j',
+                'value2': 'RIGHT_STICK_X:-1',
+                'keycode': '74'
+            },
+            22: {
+                'value': 'k',
+                'value2': 'RIGHT_STICK_Y:+1',
+                'keycode': '75'
+            },
+            23: {
+                'value': 'i',
+                'value2': 'RIGHT_STICK_Y:-1',
+                'keycode': '73'
+            },
             24: {},
             25: {},
-            26: {}
+            26: {},
+            27: {},
+            28: {},
+            29: {},
         },
         1: {},
         2: {},
         3: {}
     }
+    keyMap = {
+        8: 'backspace',
+        9: 'tab',
+        13: 'enter',
+        16: 'shift',
+        17: 'ctrl',
+        18: 'alt',
+        19: 'pause/break',
+        20: 'caps lock',
+        27: 'escape',
+        32: 'space',
+        33: 'page up',
+        34: 'page down',
+        35: 'end',
+        36: 'home',
+        37: 'left arrow',
+        38: 'up arrow',
+        39: 'right arrow',
+        40: 'down arrow',
+        45: 'insert',
+        46: 'delete',
+        48: '0',
+        49: '1',
+        50: '2',
+        51: '3',
+        52: '4',
+        53: '5',
+        54: '6',
+        55: '7',
+        56: '8',
+        57: '9',
+        65: 'a',
+        66: 'b',
+        67: 'c',
+        68: 'd',
+        69: 'e',
+        70: 'f',
+        71: 'g',
+        72: 'h',
+        73: 'i',
+        74: 'j',
+        75: 'k',
+        76: 'l',
+        77: 'm',
+        78: 'n',
+        79: 'o',
+        80: 'p',
+        81: 'q',
+        82: 'r',
+        83: 's',
+        84: 't',
+        85: 'u',
+        86: 'v',
+        87: 'w',
+        88: 'x',
+        89: 'y',
+        90: 'z',
+        91: 'left window key',
+        92: 'right window key',
+        93: 'select key',
+        96: 'numpad 0',
+        97: 'numpad 1',
+        98: 'numpad 2',
+        99: 'numpad 3',
+        100: 'numpad 4',
+        101: 'numpad 5',
+        102: 'numpad 6',
+        103: 'numpad 7',
+        104: 'numpad 8',
+        105: 'numpad 9',
+        106: 'multiply',
+        107: 'add',
+        109: 'subtract',
+        110: 'decimal point',
+        111: 'divide',
+        112: 'f1',
+        113: 'f2',
+        114: 'f3',
+        115: 'f4',
+        116: 'f5',
+        117: 'f6',
+        118: 'f7',
+        119: 'f8',
+        120: 'f9',
+        121: 'f10',
+        122: 'f11',
+        123: 'f12',
+        144: 'num lock',
+        145: 'scroll lock',
+        186: 'semi-colon',
+        187: 'equal sign',
+        188: 'comma',
+        189: 'dash',
+        190: 'period',
+        191: 'forward slash',
+        192: 'grave accent',
+        219: 'open bracket',
+        220: 'back slash',
+        221: 'close braket',
+        222: 'single quote'
+    }
     controls;
+    setupKeys(){
+        for (let i=0; i<4; i++) {
+            for (let j=0; j<30; j++) {
+                if (this.controls[i][j] && this.controls[i][j].value === this.keyMap[this.keyLookup(this.controls[i][j])]) {
+                    this.controls[i][j].keycode = Number(this.keyLookup(this.controls[i][j]));
+                }
+            }
+        }
+    }
+    keyLookup(controllerkey){
+        for (var key in this.keyMap) {
+            if (this.keyMap[key] === controllerkey.value) {
+                return key;
+            }else if (controllerkey.keycode !== undefined) {
+                return controllerkey.keycode;
+            }
+        }
+        return 0;
+    }
     keyChange(e) {
         if (e.repeat) return;
         if (!this.started) return;
@@ -2169,6 +2745,7 @@ class EmulatorJS {
                 this.controls[player][num] = {};
             }
             this.controls[player][num].value = e.key.toLowerCase();
+            this.controls[player][num].keycode = e.keyCode;
             this.controlPopup.parentElement.parentElement.setAttribute("hidden", "");
             this.checkGamepadInputs();
             this.saveSettings();
@@ -2178,8 +2755,8 @@ class EmulatorJS {
         e.preventDefault();
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
-            for (let j=0; j<27; j++) {
-                if (this.controls[i][j] && this.controls[i][j].value === e.key.toLowerCase()) {
+            for (let j=0; j<30; j++) {
+                if (this.controls[i][j] && this.controls[i][j].keycode === e.keyCode) {
                     this.gameManager.simulateInput(i, j, (e.type === 'keyup' ? 0 : (special.includes(j) ? 0x7fff : 1)));
                 }
             }
@@ -2197,11 +2774,12 @@ class EmulatorJS {
         if (this.controlPopup.parentElement.parentElement.getAttribute("hidden") === null) {
             if ('buttonup' === e.type || (e.type === "axischanged" && value === 0)) return;
             const num = this.controlPopup.getAttribute("button-num");
-            const player = this.controlPopup.getAttribute("player-num");
+            const player = parseInt(this.controlPopup.getAttribute("player-num"));
+            if (e.gamepadIndex !== player) return;
             if (!this.controls[player][num]) {
                 this.controls[player][num] = {};
             }
-            this.controls[player][num].value2 = (e.type === "axischanged" ? e.axis+":"+value : e.index);
+            this.controls[player][num].value2 = e.label;
             this.controlPopup.parentElement.parentElement.setAttribute("hidden", "");
             this.checkGamepadInputs();
             this.saveSettings();
@@ -2210,46 +2788,52 @@ class EmulatorJS {
         if (this.settingsMenu.style.display !== "none" || this.isPopupOpen()) return;
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
-            for (let j=0; j<27; j++) {
-                if (['buttonup', 'buttondown'].includes(e.type) && (this.controls[i][j] && this.controls[i][j].value2 === e.index)) {
-                    this.gameManager.simulateInput(i, j, (e.type === 'buttondown' ? 0 : (special.includes(j) ? 0x7fff : 1)));
+            if (e.gamepadIndex !== i) continue;
+            for (let j=0; j<30; j++) {
+                if (!this.controls[i][j] || this.controls[i][j].value2 === undefined) {
+                    continue;
+                }
+                const controlValue = this.controls[i][j].value2;
+
+                if (['buttonup', 'buttondown'].includes(e.type) && (controlValue === e.label || controlValue === e.index)) {
+                    this.gameManager.simulateInput(i, j, (e.type === 'buttonup' ? 0 : (special.includes(j) ? 0x7fff : 1)));
                 } else if (e.type === "axischanged") {
-                    if (this.controls[i][j] && typeof this.controls[i][j].value2 === 'string' && this.controls[i][j].value2.split(":")[0] === e.axis) {
+                    if (typeof controlValue === 'string' && controlValue.split(":")[0] === e.axis) {
                         if (special.includes(j)) {
                             if (e.axis === 'LEFT_STICK_X') {
                                 if (e.value > 0) {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 16, 0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 17, 0);
+                                    this.gameManager.simulateInput(i, 16, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 17, 0);
                                 } else {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 17, -0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 16, 0);
+                                    this.gameManager.simulateInput(i, 17, -0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 16, 0);
                                 }
                             } else if (e.axis === 'LEFT_STICK_Y') {
                                 if (e.value > 0) {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 18, 0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 19, 0);
+                                    this.gameManager.simulateInput(i, 18, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 19, 0);
                                 } else {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 19, -0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 18, 0);
+                                    this.gameManager.simulateInput(i, 19, -0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 18, 0);
                                 }
                             } else if (e.axis === 'RIGHT_STICK_X') {
                                 if (e.value > 0) {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 20, 0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 21, 0);
+                                    this.gameManager.simulateInput(i, 20, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 21, 0);
                                 } else {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 21, -0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 20, 0);
+                                    this.gameManager.simulateInput(i, 21, -0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 20, 0);
                                 }
                             } else if (e.axis === 'RIGHT_STICK_Y') {
                                 if (e.value > 0) {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 22, 0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 23, 0);
+                                    this.gameManager.simulateInput(i, 22, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 23, 0);
                                 } else {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 23, 0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 22, 0);
+                                    this.gameManager.simulateInput(i, 23, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 22, 0);
                                 }
                             }
-                        } else if (this.controls[i][j].value2 === e.axis+":"+value || value === 0) {
+                        } else if (value === 0 || controlValue === e.label || controlValue === `${e.axis}:${value}`) {
                             this.gameManager.simulateInput(i, j, ((value === 0) ? 0 : 1));
                         }
                     }
@@ -2264,10 +2848,19 @@ class EmulatorJS {
         }
         this.virtualGamepad.classList.add("ejs_virtualGamepad_parent");
         this.elements.parent.appendChild(this.virtualGamepad);
+
+        const speedControlButtons = [
+            {"type":"button","text":"Fast","id":"speed-fast","location":"center","left":-35,"top":50,"fontSize":15,"block":true,"input_value":27},
+            {"type":"button","text":"Slow","id":"speed-slow","location":"center","left":95,"top":50,"fontSize":15,"block":true,"input_value":29},
+        ];
+        if (this.rewindEnabled) {
+            speedControlButtons.push({"type":"button","text":"Rewind","id":"speed-rewind","location":"center","left":30,"top":50,"fontSize":15,"block":true,"input_value":28});
+        }
+
         let info;
         if (this.config.VirtualGamepadSettings && function(set) {
             if (!Array.isArray(set)) {
-                console.warn("Vritual gamepad settings is not array! Using default gamepad settings");
+                console.warn("Virtual gamepad settings is not array! Using default gamepad settings");
                 return false;
             }
             if (!set.length) {
@@ -2308,20 +2901,243 @@ class EmulatorJS {
             return true;
         }(this.config.VirtualGamepadSettings)) {
             info = this.config.VirtualGamepadSettings;
-        } else if ("gba" === this.getCore(true)) {
-            info = [{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":10,"top":70,"bold":true,"input_value":0},{"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},{"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},{"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}];
-        } else if ("gb" === this.getCore(true)) {
-            info = [{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":10,"top":70,"bold":true,"input_value":0},{"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
-        } else if (['vb', 'nes'].includes(this.getCore(true))) {
-            info = [{"type":"button","text":"B","id":"b","location":"right","right":-10,"top":70,"bold":true,"input_value":0},{"type":"button","text":"A","id":"a","location":"right","right":60,"top":70,"bold":true,"input_value":8},{"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
-        } else if (this.getCore(true) === 'n64') {
-            info = [{"type":"button","text":"B","id":"b","location":"right","left":-10,"top":95,"input_value":1,"bold":true},{"type":"button","text":"A","id":"a","location":"right","left":40,"top":150,"input_value":0,"bold":true},{"type":"zone","location":"left","left":"50%","top":"100%","joystickInput":true,"inputValues":[16, 17, 18, 19]},{"type":"zone","location":"left","left":"50%","top":"0%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":30,"top":-10,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"L","id":"l","block":true,"location":"top","left":10,"top":-40,"bold":true,"input_value":10},{"type":"button","text":"R","id":"r","block":true,"location":"top","right":10,"top":-40,"bold":true,"input_value":11},{"type":"button","text":"Z","id":"z","block":true,"location":"top","left":10,"bold":true,"input_value":12},{"fontSize":20,"type":"button","text":"CU","id":"cu","location":"right","left":25,"top":-65,"input_value":23},{"fontSize":20,"type":"button","text":"CD","id":"cd","location":"right","left":25,"top":15,"input_value":22},{"fontSize":20,"type":"button","text":"CL","id":"cl","location":"right","left":-15,"top":-25,"input_value":21},{"fontSize":20,"type":"button","text":"CR","id":"cr","location":"right","left":65,"top":-25,"input_value":20}];
-        } else if (this.getCore(true) === "nds") {
-            info = [{"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},{"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},{"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}];
-        } else if (this.getCore(true) === "snes") {
-            info = [{"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},{"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},{"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}];
+        } else if ("gba" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"B","id":"b","location":"right","left":10,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("gb" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"b","location":"right","left":10,"top":70,"bold":true,"input_value":0},
+                {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+            ];
+            info.push(...speedControlButtons);
+        } else if ('nes' === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"A","id":"a","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+            ];
+            info.push(...speedControlButtons);
+        } else if ('n64' === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"B","id":"b","location":"right","left":-10,"top":95,"input_value":1,"bold":true},
+                {"type":"button","text":"A","id":"a","location":"right","left":40,"top":150,"input_value":0,"bold":true},
+                {"type":"zone","location":"left","left":"50%","top":"100%","joystickInput":true,"inputValues":[16, 17, 18, 19]},
+                {"type":"zone","location":"left","left":"50%","top":"0%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Start","id":"start","location":"center","left":30,"top":-10,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"L","id":"l","block":true,"location":"top","left":10,"top":-40,"bold":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","block":true,"location":"top","right":10,"top":-40,"bold":true,"input_value":11},
+                {"type":"button","text":"Z","id":"z","block":true,"location":"top","left":10,"bold":true,"input_value":12},
+                {"fontSize":20,"type":"button","text":"CU","id":"cu","location":"right","left":25,"top":-65,"input_value":23},
+                {"fontSize":20,"type":"button","text":"CD","id":"cd","location":"right","left":25,"top":15,"input_value":22},
+                {"fontSize":20,"type":"button","text":"CL","id":"cl","location":"right","left":-15,"top":-25,"input_value":21},
+                {"fontSize":20,"type":"button","text":"CR","id":"cr","location":"right","left":65,"top":-25,"input_value":20}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("nds" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},
+                {"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},
+                {"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},
+                {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("snes" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},
+                {"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},
+                {"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},
+                {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}
+            ];
+            info.push(...speedControlButtons);
+        } else if (['segaMD', 'segaCD', 'sega32x'].includes(this.getControlScheme())) {
+            info = [
+                {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"C","id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"X","id":"x","location":"right","right":145,"top":0,"bold":true,"input_value":10},
+                {"type":"button","text":"Y","id":"y","location":"right","right":75,"top":0,"bold":true,"input_value":9},
+                {"type":"button","text":"Z","id":"z","location":"right","right":5,"top":0,"bold":true,"input_value":11},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Mode","id":"mode","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("segaMS" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"1","id":"button1","location":"right","left":10,"top":40,"bold":true,"input_value":0},
+                {"type":"button","text":"2","id":"button2","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("segaGG" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"1","id":"button1","location":"right","left":10,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"2","id":"button2","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("segaSaturn" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"C","id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"X","id":"x","location":"right","right":145,"top":0,"bold":true,"input_value":9},
+                {"type":"button","text":"Y","id":"y","location":"right","right":75,"top":0,"bold":true,"input_value":10},
+                {"type":"button","text":"Z","id":"z","location":"right","right":5,"top":0,"bold":true,"input_value":11},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":12},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":13},
+                {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("atari2600" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"","id":"button1","location":"right","right":10,"top":70,"bold":true,"input_value":0},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Reset","id":"reset","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("atari7800" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"1","id":"button1","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"2","id":"button2","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Reset","id":"reset","location":"center","left":-35,"fontSize":15,"block":true,"input_value":9},
+                {"type":"button","text":"Pause","id":"pause","location":"center","left":95,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":30,"fontSize":15,"block":true,"input_value":2},
+            ];
+            info.push(...speedControlButtons);
+        } else if ("lynx" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"B","id":"button1","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"A","id":"button2","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Opt 1","id":"option1","location":"center","left":-35,"fontSize":15,"block":true,"input_value":10},
+                {"type":"button","text":"Opt 2","id":"option2","location":"center","left":95,"fontSize":15,"block":true,"input_value":11},
+                {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("jaguar" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"C","id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":1},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Option","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Pause","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("vb" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":150,"bold":true,"input_value":0},
+                {"type":"button","text":"A","id":"a","location":"right","right":5,"top":150,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"dpad","location":"right","left":"50%","right":"50%","joystickInput":false,"inputValues":[19,18,17,16]},
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("3do" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"C","id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11},
+                {"type":"button","text":"X","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"bold":true,"input_value":2},
+                {"type":"button","text":"P","id":"start","location":"center","left":60,"fontSize":15,"block":true,"bold":true,"input_value":3}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("pce" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"II","id":"ii","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"I","id":"i","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Run","id":"run","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+            ];
+            info.push(...speedControlButtons);
+        } else if ('ngp' === this.getControlScheme()) {
+                info = [
+                    {"type":"button","text":"A","id":"a","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                    {"type":"button","text":"B","id":"b","location":"right","right":5,"top":50,"bold":true,"input_value":8},
+                    {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                    {"type":"button","text":"Option","id":"option","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
+                ];
+                info.push(...speedControlButtons);
+        } else if ('ws' === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":150,"bold":true,"input_value":0},
+                {"type":"button","text":"A","id":"a","location":"right","right":5,"top":150,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"dpad","location":"right","left":"50%","right":"50%","joystickInput":false,"inputValues":[13,12,10,11]},
+                {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3},
+            ];
+            info.push(...speedControlButtons);
+        } else if ('coleco' === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"L","id":"buttonLeft","location":"right","left":10,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"R","id":"buttonRight","location":"right","left":81,"top":40,"bold":true,"input_value":0},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]}
+            ];
+            info.push(...speedControlButtons);
+        } else if ('pcfx' === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"I","id":"i","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"II","id":"ii","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"III","id":"iii","location":"right","right":145,"top":70,"bold":true,"input_value":9},
+                {"type":"button","text":"IV","id":"iv","location":"right","right":5,"top":0,"bold":true,"input_value":1},
+                {"type":"button","text":"V","id":"v","location":"right","right":75,"top":0,"bold":true,"input_value":10},
+                {"type":"button","text":"VI","id":"vi","location":"right","right":145,"top":0,"bold":true,"input_value":11},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"Run","id":"run","location":"center","left":60,"fontSize":15,"block":true,"input_value":3}
+            ];
+            info.push(...speedControlButtons);
         } else {
-            info = [{"type":"button","text":"Y","id":"y","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"X","id":"X","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"B","id":"b","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"A","id":"a","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"zone","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
+            info = [
+                {"type":"button","text":"Y","id":"y","location":"right","left":40,"bold":true,"input_value":9},
+                {"type":"button","text":"X","id":"X","location":"right","top":40,"bold":true,"input_value":1},
+                {"type":"button","text":"B","id":"b","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"A","id":"a","location":"right","left":40,"top":80,"bold":true,"input_value":0},
+                {"type":"zone","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+            ];
+            info.push(...speedControlButtons);
+        }
+        for (let i=0; i<info.length; i++) {
+            if (info[i].text) {
+                info[i].text = this.localization(info[i].text);
+            }
         }
         info = JSON.parse(JSON.stringify(info));
         
@@ -2716,6 +3532,20 @@ class EmulatorJS {
         localStorage.setItem("ejs-settings", JSON.stringify(ejs_settings));
         localStorage.setItem("ejs-"+this.getCore()+"-settings", JSON.stringify(coreSpecific));
     }
+    loadRewindEnabled() {
+        if (!window.localStorage) return;
+        let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
+        try {
+           coreSpecific = JSON.parse(coreSpecific);
+           if (!coreSpecific || !coreSpecific.settings) {
+               return false;
+           }
+           return coreSpecific.settings.rewindEnabled === 'enabled';
+        } catch (e) {
+            console.warn("Could not load previous settings", e);
+            return false;
+        }
+    }
     loadSettings() {
         if (!window.localStorage) return;
         this.settingsLoaded = true;
@@ -2781,8 +3611,45 @@ class EmulatorJS {
             this.toggleVirtualGamepad(value !== "disabled");
         } else if (option === "virtual-gamepad-left-handed-mode") {
             this.toggleVirtualGamepadLeftHanded(value !== "disabled");
+        } else if (option === "ff-ratio") {
+            if (this.isFastForward) this.gameManager.toggleFastForward(0);
+            if (value === "unlimited") {
+                this.gameManager.setFastForwardRatio(0);
+            } else if (!isNaN(value)) {
+                this.gameManager.setFastForwardRatio(parseFloat(value));
+            }
+            setTimeout(() => {
+                if (this.isFastForward) this.gameManager.toggleFastForward(1);
+            }, 10)
+        } else if (option === "fastForward") {
+            if (value === "enabled") {
+                this.isFastForward = true;
+                this.gameManager.toggleFastForward(1);
+            } else if (value === "disabled") {
+                this.isFastForward = false;
+                this.gameManager.toggleFastForward(0);
+            }
+        } else if (option === 'sm-ratio') {
+            if (this.isSlowMotion) this.gameManager.toggleSlowMotion(0);
+            this.gameManager.setSlowMotionRatio(parseFloat(value));
+            setTimeout(() => {
+                if (this.isSlowMotion) this.gameManager.toggleSlowMotion(1);
+            }, 10);
+        } else if (option === 'slowMotion') {
+            if (value === "enabled") {
+                this.isSlowMotion = true;
+                this.gameManager.toggleSlowMotion(1);
+            } else if (value === "disabled") {
+                this.isSlowMotion = false;
+                this.gameManager.toggleSlowMotion(0);
+            }
+        } else if (option === "rewind-granularity") {
+            if (this.rewindEnabled) {
+                this.gameManager.setRewindGranularity(parseInt(value));
+            }
         }
         this.gameManager.setVariable(option, value);
+        this.saveSettings();
     }
     setupSettingsMenu() {
         this.settingsMenu = this.createElement("div");
@@ -2795,6 +3662,12 @@ class EmulatorJS {
         home.style.overflow = "auto";
         const menus = [];
         this.handleSettingsResize = () => {
+            let needChange = false;
+            if (this.settingsMenu.style.display !== "") {
+                this.settingsMenu.style.opacity = "0";
+                this.settingsMenu.style.display = "";
+                needChange = true;
+            }
             const x = this.settingsMenu.parentElement.getBoundingClientRect().x;
             let height = this.elements.parent.getBoundingClientRect().height;
             let width = this.elements.parent.getBoundingClientRect().width;
@@ -2804,10 +3677,11 @@ class EmulatorJS {
             for (let i=0; i<menus.length; i++) {
                 menus[i].style['max-height'] = (height - 95) + "px";
             }
-            if (width < 575) {
-                this.settingsMenu.classList.toggle("ejs_settings_leftside", !((window.innerWidth/2) > x));
-            } else {
-                this.settingsMenu.classList.remove("ejs_settings_leftside");
+            this.settingsMenu.classList.toggle("ejs_settings_center_left", (x < width/2) && (width < 575));
+            this.settingsMenu.classList.toggle("ejs_settings_center_right", (x >= width/2) && (width < 575));
+            if (needChange) {
+                this.settingsMenu.style.display = "none";
+                this.settingsMenu.style.opacity = "";
             }
         }
         
@@ -2952,6 +3826,33 @@ class EmulatorJS {
             'hide': this.localization("hide")
         }, 'hide');
         
+        addToMenu(this.localization('Fast Forward Ratio'), 'ff-ratio', [
+            "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0", "unlimited"
+        ], "3.0");
+
+        addToMenu(this.localization('Slow Motion Ratio'), 'sm-ratio', [
+            "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0"
+        ], "3.0");
+
+        addToMenu(this.localization('Fast Forward'), 'fastForward', {
+            'enabled': this.localization("Enabled"),
+            'disabled': this.localization("Disabled")
+        }, "disabled");
+
+        addToMenu(this.localization('Slow Motion'), 'slowMotion', {
+            'enabled': this.localization("Enabled"),
+            'disabled': this.localization("Disabled")
+        }, "disabled");
+
+        addToMenu(this.localization('Rewind Enabled (requires restart)'), 'rewindEnabled', {
+            'enabled': this.localization("Enabled"),
+            'disabled': this.localization("Disabled")
+        }, 'disabled');
+
+        addToMenu(this.localization('Rewind Granularity'), 'rewind-granularity', [
+            '1', '3', '6', '12', '25', '50', '100'
+        ], '6');
+
         if (this.saveInBrowserSupported()) {
             addToMenu(this.localization('Save State Slot'), 'save-state-slot', ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "1");
             addToMenu(this.localization('Save State Location'), 'save-state-location', {
@@ -2984,9 +3885,9 @@ class EmulatorJS {
                 if (options.length === 1) return;
                 let availableOptions = {};
                 for (let i=0; i<options.length; i++) {
-                    availableOptions[options[i]] = this.localization(options[i]);
+                    availableOptions[options[i]] = this.localization(options[i], this.settingsLanguage);
                 }
-                addToMenu(this.localization(optionName),
+                addToMenu(this.localization(optionName, this.settingsLanguage),
                           name.split("|")[0], availableOptions,
                           (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''));
             })
@@ -3493,7 +4394,11 @@ class EmulatorJS {
         let justReset = false;
         this.netplay.dataMessage = (data) => {
             //console.log(data);
+            if (data.sync === true && this.netplay.owner) {
+                this.netplay.sync();
+            }
             if (data.state) {
+                this.netplay.wait = true;
                 this.netplay.setLoading(true);
                 this.pause(true);
                 this.gameManager.loadState(new Uint8Array(data.state));
@@ -3508,130 +4413,139 @@ class EmulatorJS {
             if (data.ready && this.netplay.owner) {
                 this.netplay.ready++;
                 if (this.netplay.ready === this.netplay.getUserCount()) {
-                    this.netplay.sendMessage({readyready:true, resetCurrentFrame: true});
-                    setTimeout(() => this.play(true), 100);
+                    this.netplay.sendMessage({readyready:true});
+                    this.netplay.reset();
+                    this.play(true);
                     this.netplay.setLoading(false);
-                    this.netplay.current_frame = 0;
-                    justReset = true;
                 }
             }
             if (data.readyready) {
                 this.netplay.setLoading(false);
-                this.netplay.current_frame = 0;
-                this.play(true)
-            }
-            if (data.resetCurrentFrame) {
+                this.netplay.reset();
                 this.play(true);
-                this.netplay.current_frame = 0;
-                this.netplay.inputs = {};
             }
-            if (data.user_frame && this.netplay.owner) {
-                if (justReset) {
-                    justReset = false;
-                    this.netplay.current_frame = 0;
-                    this.netplay.inputs = {};
-                }
-                this.netplay.users[data.user_frame.user] = data.user_frame.frame;
-                //console.log(data.user_frame.frame, this.netplay.current_frame);
-            }
-            if (data.shortPause === this.netplay.playerID) {
+            if (data.shortPause && data.shortPause !== this.netplay.playerID) {
                 this.pause(true);
-                setTimeout(() => this.play(true), 5);
-            } else if (data.lessShortPause === this.netplay.playerID) {
-                this.pause(true);
-                setTimeout(() => this.play(true), 10);
+                this.netplay.wait = true;
+                setTimeout(() => this.play(true), 48);
             }
-            if (data.input && this.netplay.owner) {
-                this.netplay.simulateInput(this.netplay.getUserIndex(data.user), data.input[0], data.input[1], true);
-            }
-            if (data.connected_input && !this.netplay.owner) {
-                if (!this.netplay.inputs[data.frame]) {
-                    this.netplay.inputs[data.frame] = [];
-                }
-                this.netplay.inputs[data.frame].push([data.connected_input[0], data.connected_input[1], data.connected_input[2]]);
+            if (data["sync-control"]) {
+                data["sync-control"].forEach((value) => {
+                    let inFrame = parseInt(value.frame);
+                    let frame = this.netplay.currentFrame;
+                    this.netplay.inputsData[inFrame] || (this.netplay.inputsData[inFrame] = []);
+                    if (!value.connected_input || value.connected_input[0] < 0) return;
+                    if (inFrame === frame) {
+                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
+                    }
+                    this.netplay.inputsData[frame] || (this.netplay.inputsData[frame] = []);
+                    if (this.netplay.owner) {
+                        this.netplay.inputsData[frame].push(value);
+                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
+                        if (frame - 10 >= inFrame) {
+                            this.netplay.wait = true;
+                            this.pause(true);
+                            setTimeout(() => {
+                                this.play(true);
+                                this.netplay.wait = false;
+                            }, 48)
+                        }
+                    } else {
+                        this.netplay.inputsData[inFrame].push(value);
+                        if (this.netplay.inputsData[frame]) {
+                            this.play(true);
+                        }
+                        if (frame + 10 <= inFrame && inFrame > this.netplay.init_frame + 100) {
+                            this.netplay.sendMessage({shortPause:this.netplay.playerID});
+                        }
+                    }
+                });
             }
             if (data.restart) {
                 this.gameManager.restart();
-                this.netplay.current_frame = 0;
-                this.netplay.inputs = {};
+                this.netplay.reset();
                 this.play(true);
             }
         }
         this.netplay.simulateInput = (player, index, value, resp) => {
             if (!this.isNetplay) return;
             if (player !== 0 && !resp) return;
+            player = this.netplay.getUserIndex(this.netplay.playerID)
+            const frame = this.netplay.currentFrame;
             if (this.netplay.owner) {
-                const frame = this.netplay.current_frame;
-                this.gameManager.functions.simulateInput(player, index, value);
-                this.netplay.sendMessage({
+                if (!this.netplay.inputsData[frame]) {
+                    this.netplay.inputsData[frame] = [];
+                }
+                this.netplay.inputsData[frame].push({
                     frame: frame,
                     connected_input: [player, index, value]
-                });
+                })
+                this.gameManager.functions.simulateInput(player, index, value);
             } else {
                 this.netplay.sendMessage({
-                    user: this.netplay.playerID,
-                    input: [index, value]
-                });
+                    "sync-control": [{
+                        frame: frame,
+                        connected_input: [player, index, value]
+                    }]
+                })
             }
         }
         this.netplay.sendMessage = (data) => {
             this.netplay.socket.emit("data-message", data);
         }
+        this.netplay.reset = () => {
+            this.netplay.init_frame = this.netplay.currentFrame;
+            this.netplay.inputsData = {};
+        }
         //let fps;
         //let lastTime;
+        this.netplay.init_frame = 0;
+        this.netplay.currentFrame = 0;
+        this.netplay.inputsData = {};
         this.Module.postMainLoop = () => {
             //const newTime = window.performance.now();
             //fps = 1000 / (newTime - lastTime);
             //console.log(fps);
             //lastTime = newTime;
-            if (!this.isNetplay || this.paused) return;
-            this.netplay.current_frame++;
+            
+            //frame syncing - working
+            //control syncing - broken
+            if (!this.isNetplay) return;
+            this.netplay.currentFrame = parseInt(this.gameManager.getFrameNum()) - this.netplay.init_frame;
             if (this.netplay.owner) {
-                for (const k in this.netplay.users) {
-                    if (this.netplay.getUserIndex(k) === -1) {
-                        delete this.netplay.users[k];
-                        continue;
-                    }
-                    const diff = this.netplay.current_frame - this.netplay.users[k];
-                    //console.log(diff);
-                    if (Math.abs(diff) > 75) {
-                        this.netplay.sync();
-                        return;
-                    }
-                    //this'll be adjusted if needed
-                    if (diff < 0) {
-                        this.netplay.sendMessage({
-                            lessShortPause: k
-                        })
-                    }
-                    if (diff < 5) {
-                        this.netplay.sendMessage({
-                            shortPause: k
-                        })
-                    } else if (diff > 30) {
-                        this.pause(true);
-                        setTimeout(() => this.play(true), 10);
-                    } else if (diff > 10) {
-                        this.pause(true);
-                        setTimeout(() => this.play(true), 5);
-                    }
+                let to_send = [];
+                for (let i=this.netplay.currentFrame-1; i<this.netplay.currentFrame; i++) {
+                    this.netplay.inputsData[i] ? this.netplay.inputsData[i].forEach((value) => {
+                        to_send.push(value);
+                    }) : to_send.push({frame: i});
                 }
+                this.netplay.sendMessage({"sync-control": to_send});
             } else {
-                this.netplay.sendMessage({
-                    user_frame: {
-                        user: this.netplay.playerID,
-                        frame: this.netplay.current_frame
-                    }
-                });
-                for (const k in this.netplay.inputs) {
-                    if (k <= this.netplay.current_frame) {
-                        this.netplay.inputs[k].forEach(data => {
-                            this.gameManager.functions.simulateInput(data[0], data[1], data[2]);
-                        })
-                        delete this.netplay.inputs[k];
-                    }
+                if (this.netplay.currentFrame <= 0 || this.netplay.inputsData[this.netplay.currentFrame]) {
+                    this.netplay.wait = false;
+                    this.play();
+                    this.netplay.inputsData[this.netplay.currentFrame].forEach((value) => {
+                        console.log(value);
+                        if (!value.connected_input) return;
+                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
+                    })
+                } else if (!this.netplay.syncing) {
+                    console.log("sync");
+                    this.pause(true);
+                    this.netplay.sendMessage({sync:true});
+                    this.netplay.syncing = true;
                 }
             }
+            if (this.netplay.currentFrame % 100 === 0) {
+                Object.keys(this.netplay.inputsData).forEach(value => {
+                    if (value < this.netplay.currentFrame - 50) {
+                        this.netplay.inputsData[value] = null;
+                        delete this.netplay.inputsData[value];
+                    }
+                })
+            }
+            
+            
         }
         
         this.netplay.updateList = {
@@ -3766,6 +4680,7 @@ class EmulatorJS {
                 this.cheatChanged(false, code, getIndex(desc, code));
                 this.cheats.splice(getIndex(desc, code), 1);
                 row.remove();
+                this.saveSettings();
             })
             
             this.elements.cheatRows.appendChild(row);
@@ -3781,3 +4696,4 @@ class EmulatorJS {
         this.gameManager.setCheat(index, checked, code);
     }
 }
+window.EmulatorJS = EmulatorJS;
