@@ -17,7 +17,7 @@
 
 ## Need more deployment help?
 Click [here!](docs/deployment.md)
-
+ 
 ## What is this?
 This is the successor to our GBA site.
 
