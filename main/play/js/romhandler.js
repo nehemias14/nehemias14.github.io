@@ -43,12 +43,11 @@ function assembleRomLink() {
 }
 
 let gameName = assembleRomLink(); // Set EmuJS Variables
+let gameCore = params.console; // Set EmuJS Variables
 if (params.console == "gbc") {
-  let gameCore = gba;
+  gameCore = "gba";
 }
-else {
-  let gameCore = params.console; // Set EmuJS Variables
-}
+console.log(gameCore);
 
 
 /*
